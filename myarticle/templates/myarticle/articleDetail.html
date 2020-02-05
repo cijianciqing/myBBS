@@ -1,0 +1,54 @@
+{% extends 'myarticle/blogPageBase.html' %}
+
+{% block blogMainContent %}
+    {% csrf_token %}
+
+    <div class="article-detail">
+        <div class="d-flex justify-content-center">
+            <h1>{{ userArticle.title }}</h1>
+        </div>
+        <div id="MythumbCount" class="d-flex justify-content-end">
+             点赞数{{ userArticle.up_count }}
+        </div>
+        <p>{{ articleDetail.content|safe }}</p>
+    </div>
+    <div id="myThumbUp" class="d-flex justify-content-center">
+        {% if articleUpDown.is_up %}
+            <i class="fa fa-thumbs-up" aria-hidden="true">已点赞</i>
+        {% else %}
+            <i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>
+        {% endif %}
+
+    </div>
+    <script type="application/javascript">
+        $("#myThumbUp").click(function () {
+                // 点赞或踩灭
+                var is_up = $(this).find("i").hasClass("fa fa-thumbs-o-up");
+                var article_id = "{{ userArticle.pk }}";
+
+                $.ajax({
+                    url: "{% url 'myblog:thumbUp' %}",
+                    type: "post",
+                    data: {
+                        is_up: is_up,
+                        article_id: article_id,
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        $("#MythumbCount").text('点赞数'+ data.data.thumbCount);
+                        if (is_up) {// 赞或者灭成功
+                            $("#myThumbUp").html('<i class="fa fa-thumbs-up" aria-hidden="true" >已点赞</i>')
+                        } else {
+                            $("#myThumbUp").html('<i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>')
+                        }
+
+                    }
+                })
+
+
+            }
+        )
+
+    </script>
+{% endblock %}

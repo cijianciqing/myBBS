@@ -22,14 +22,19 @@ from django.conf.urls import url
 from django.views.generic import TemplateView, RedirectView
 from django.views.static import serve
 
+from myarticle import views
+
 urlpatterns = [
     re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
     re_path(r'^media/(?P<path>.*)$', static.serve, kwargs={'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', static.serve, kwargs={'document_root': settings.STATIC_ROOT}, name='static'),
     path('admin/', admin.site.urls),
 
-    path('', TemplateView.as_view(template_name="index.html")),
+    # path('', TemplateView.as_view(template_name="index.html")),
+    path('', views.index),
+
     path('1/', TemplateView.as_view(template_name="index2.html")),
 
     path('myAuth/', include('myauth.urls')),
+    path('myBlog/', include('myarticle.urls')),
 ]

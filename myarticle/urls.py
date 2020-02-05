@@ -22,8 +22,17 @@ from django.conf.urls import url
 from django.views.generic import TemplateView, RedirectView
 from django.views.static import serve
 from . import views
-app_name = 'myauth'
+app_name = 'myblog'
+
 urlpatterns = [
-    path('register/',views.register,name='register'),
-    path('login/', views.login, name='login'),
+    path('index/',views.index,name='index'),
+
+    path('thumbup/',views.thumbUp,name='thumbUp'),
+
+    # 进入特定用户博客
+    re_path(r'^(?P<username>[a-zA-Z0-9_]{4,19})/$',views.user,name='user'),
+    # 打开特定文章
+    re_path(r'^article/(?P<username>[a-zA-Z0-9_]{4,19})?/article/(?P<articleID>\d+)/$',views.articleDetail,name='articleDetail'),
+
+
 ]

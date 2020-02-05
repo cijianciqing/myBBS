@@ -1,0 +1,31 @@
+
+/* 博客主页面 自定义样式*/
+.author-img {
+    width: 80px;
+    height: 80px;
+    margin-right: 10px;
+}
+
+/**/
+.article-footer span {
+    margin-right: 15px;
+}
+.article-footer i {
+    margin-left: 15px;
+}
+
+/*距离上侧10px*/
+.article-footer {
+    margin-top: 10px;
+}
+
+#myNavbar_right li{
+    margin-right: 15px;
+}
+
+#myMainContent {
+    margin-top: 30px;
+}
+#myArticleShortcut {
+    margin-top: 30px;
+}

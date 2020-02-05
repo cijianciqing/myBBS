@@ -154,7 +154,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'myUpload') # 注意此处不要写成列表
 #######################################################################
 # SESSION_COOKIE_AGE =10*60# 设置过期时间10分钟，默认为两周
 # SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE =True# 设置关闭浏览器时失效
+# SESSION_EXPIRE_AT_BROWSER_CLOSE =True# 设置关闭浏览器时失效
 
 
 #######################################################################

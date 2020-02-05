@@ -34,6 +34,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = "文章分类"
         verbose_name_plural = verbose_name
+        unique_together = (("blog", "title"),)
 
 
 class Tag(models.Model):
@@ -118,7 +119,7 @@ class ArticleUpDown(models.Model):
     nid = models.AutoField(primary_key=True)
     user = models.ForeignKey(to="myauth.MyUserInfo", null=True,on_delete=models.SET_NULL)
     article = models.ForeignKey(to="Article", null=True,on_delete=models.SET_NULL)
-    is_up = models.BooleanField(default=True)
+    is_up = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (("article", "user"),)

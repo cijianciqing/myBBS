@@ -75,3 +75,8 @@ def login(request):
         return redirect(my_next_url)
     # 登陆失败处理
     return render(request,"myauth/myLogin.html",context={"loginError": True})
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect(to="/")

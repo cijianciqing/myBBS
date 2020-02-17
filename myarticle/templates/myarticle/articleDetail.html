@@ -6,23 +6,119 @@
     <div class="article-detail">
         <div class="d-flex justify-content-center">
             <h1>{{ userArticle.title }}</h1>
+            <h1 id="myArticleID" hidden>{{ userArticle.pk }}</h1>
         </div>
-        <div id="MythumbCount" class="d-flex justify-content-end">
-             点赞数{{ userArticle.up_count }}
+        <div class="d-flex justify-content-around mt-2">
+            <div>创建人:{{ userArticle.user.username }}</div>
+            <div>创建时间:{{ userArticle.create_time|date:'Y-m-d H:i:s' }}</div>
+            <div id="MythumbCount">点赞数:{{ userArticle.up_count }}</div>
         </div>
-        <p>{{ articleDetail.content|safe }}</p>
+        {#        <div id="MythumbCount" class="d-flex justify-content-end">点赞数{{ userArticle.up_count }}</div>#}
+        <div class="myArticleContent"><p>{{ articleDetail.content|safe }}</p></div>
     </div>
-    <div id="myThumbUp" class="d-flex justify-content-center">
-        {% if articleUpDown.is_up %}
-            <i class="fa fa-thumbs-up" aria-hidden="true">已点赞</i>
-        {% else %}
-            <i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>
-        {% endif %}
 
-    </div>
+    {% if request.user.username %}
+        <div id="myThumbUp" class="d-flex justify-content-center">
+            {% if articleUpDown.is_up %}
+                <i class="fa fa-thumbs-up" aria-hidden="true">已点赞</i>
+            {% else %}
+                <i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>
+            {% endif %}
+        </div>
+        <p>文章历史评论</p>
+        <div class="myCommentTree">
+        </div>
+
+        <div class="div_comment">
+            <p>昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
+                         value="{{ request.user.username }}"></p>
+            <p>评论内容</p>
+            <textarea name="" id="comment_content" cols="60" rows="10"></textarea>
+            <p>
+                <button id="comment_btn">提交评论</button>
+            </p>
+
+        </div>
+        {% comment %} {% else %}
+        <a href="{% url 'myauth:login' %}">登录评论</a>{% endcomment %}
+    {% endif %}
+
     <script type="application/javascript">
+
+        // 获取评论数据，展示评论树结构
+        $.ajax({
+            url: "{% url 'myblog:getCommentTreeData' userArticle.pk%}",
+            success: function (data) {
+                {#console.log(data);#}
+
+                $.each(data, function (index, comment_dict) {
+                    var s = '<div class="comment_item" comment_id=' + comment_dict.pk + '><div class="myCommentTitle"><span style="color: gray">' + comment_dict.create_time_new + '</span> &nbsp;&nbsp;<a id="commentUserName" href="#"><span>' + comment_dict.user__username + '</span></a> <a href="#" class="ml-5 reply_btn text-decoration-none"><span>回复</span></a> </div> <div class="myCommentContent"><span>' + comment_dict.content + '</span></div></div>'
+                    if (comment_dict.parent_comment_id) {
+                        // 子评论
+                        ppid = comment_dict.parent_comment_id;
+                        $("[comment_id=" + ppid + "]").append(s);
+                    } else {   //  根评论
+                        $(".myCommentTree").append(s);
+                    }
+                })
+
+
+            }
+        });
+
+        // 提交评论
+        var pid = "";
+        $("#comment_btn").click(function () {
+
+            var article_id = $("#myArticleID").text();
+            var content = $("#comment_content").val();
+            {#如果是子评论，对评论内容进行截取#}
+            if (pid) {
+                var index = content.indexOf("\n");
+                content = content.slice(index + 1)
+            }
+            $.ajax({
+                url: "{% url 'myblog:postComment' %}",
+                type: "post",
+                data: {
+                    article_id: article_id,
+                    content: content,
+                    pid: pid,
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                },
+                success: function (data) {
+                    console.log(data);
+                    var create_time = data.create_time;
+                    var content = data.content;
+                    var username = data.username;
+
+
+                    {#var comment_li = '<li class="list-group-item"><div><span style="color: gray">' + create_time + '</span> &nbsp;&nbsp; <a href=""><span>' + username + '</span></a></div> <div class="con"> <p> ' + content + ' </p> </div> </li>';#}
+                    {##}
+                    {#$(".comment_list").append(comment_li);#}
+
+                    // 清空文本框
+                    $("#comment_content").val('');
+                    // 清空pid
+                    pid = ""
+                }
+            })
+
+
+        });
+
+        // 回复按钮事件
+        $(document).on("click", ".reply_btn", function () {
+            $("#comment_content").focus();
+            var v = "@" + $("#commentUserName").text() + "\n";
+            $("#comment_content").val(v);
+            //pid赋值
+            pid = $(this).parent().parent().attr("comment_id")
+        })
+
+
+        // 点赞或踩灭
         $("#myThumbUp").click(function () {
-                // 点赞或踩灭
                 var is_up = $(this).find("i").hasClass("fa fa-thumbs-o-up");
                 var article_id = "{{ userArticle.pk }}";
 
@@ -36,7 +132,7 @@
                     },
                     success: function (data) {
                         console.log(data)
-                        $("#MythumbCount").text('点赞数'+ data.data.thumbCount);
+                        $("#MythumbCount").text('点赞数' + data.data.thumbCount);
                         if (is_up) {// 赞或者灭成功
                             $("#myThumbUp").html('<i class="fa fa-thumbs-up" aria-hidden="true" >已点赞</i>')
                         } else {

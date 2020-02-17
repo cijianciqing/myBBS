@@ -37,9 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # django-guardian模块
+    'guardian',
     #myCustomize
     'myauth.apps.MyauthConfig',
     'myarticle.apps.MyarticleConfig',
+    # 添加ckeditor富文本编辑器
+    'ckeditor',
+    # ckeditor的图片上传功能
+    'ckeditor_uploader'
+
 
 ]
 
@@ -72,8 +79,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'myBBS.wsgi.application'
+#######################################################################
+##########################django-guardian设置###########################
+#######################################################################
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
+GUARDIAN_RAISE_403 = True
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'myauth.models.get_custom_anon_user'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -82,6 +98,7 @@ WSGI_APPLICATION = 'myBBS.wsgi.application'
 #######################################################################
 DATABASES = {
     'default': {
+
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mybbs_dev',
         'USER': 'root',
@@ -116,15 +133,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # LANGUAGE_CODE = 'en-us'
 #
-# TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'zh-hans'
 TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
-
-USE_TZ = True
+# 设置USE_TZ = False, TIME_ZONE = 'Asia/Shanghai', 则使用上海的UTC时间
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -170,7 +186,8 @@ LOGGING = {
     'formatters': {# 日志格式
         'standard': {
             'format': '%(asctime)s [%(threadName)s:%(thread)d] '
-                      '[%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'
+                        '[%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'
+                      # '[%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'
         },
         'simple': {
             'format': '%(asctime)s %(message)s'
@@ -239,4 +256,76 @@ LOGGING = {
 LOGIN_URL = '/myAuth/login/'#设置默认的登陆页面，默认会跳转到‘/accounts/login/’
 # 告诉Django项目用哪张表做认证
 AUTH_USER_MODEL = 'myauth.MyUserInfo'
+
+#######################################################################
+##########################ckeditor配置#################################
+#######################################################################
+from ckeditor.configs import DEFAULT_CONFIG
+
+CKEDITOR_UPLOAD_PATH = "ckeditorUpload/"
+if not os.path.exists(CKEDITOR_UPLOAD_PATH):
+    os.makedirs(CKEDITOR_UPLOAD_PATH)
+
+# enable thumbnails in ckeditor gallery.
+CKEDITOR_IMAGE_BACKEND = "pillow"
+'''
+With the pillow backend, you can change the thumbnail size with the CKEDITOR_THUMBNAIL_SIZE setting (formerly THUMBNAIL_SIZE). Default value: (75, 75)
+'''
+CKEDITOR_THUMBNAIL_SIZE = (300, 300)
+CKEDITOR_IMAGE_QUALITY = 40
+'''
+show directories on the "Browse Server" page. This enables image grouping by directory they are stored in, sorted by date.
+'''
+CKEDITOR_BROWSE_SHOW_DIRS = True
+CKEDITOR_ALLOW_NONIMAGE_FILES = True
+
+CUSTOM_TOOLBAR = [
+    {
+        "name": "document",
+        "items": [
+            "Styles", "Format", "Bold", "Italic", "Underline", "Strike", "-",
+            "TextColor", "BGColor",  "-",
+            "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock",
+        ],
+    },
+    {
+        "name": "widgets",
+        "items": [
+            "Undo", "Redo", "-",
+            "NumberedList", "BulletedList", "-",
+            "Outdent", "Indent", "-",
+            "Link", "Unlink", "-",
+            "Image", "CodeSnippet", "Table", "HorizontalRule", "Smiley", "SpecialChar", "-",
+            "Blockquote", "-",
+            "ShowBlocks", "Maximize",
+        ],
+    },
+]
+
+
+# ckeditor配置
+
+
+
+CKEDITOR_CONFIGS = {
+    # "default": DEFAULT_CONFIG,
+    'default': {
+        'toolbar': 'full',  # 工具栏全部功能
+        'height': 300,  # 高度
+        'width': '100%',  # 宽度
+        'uiColor' : '#E0F2F4',
+        "codeSnippet_theme": "school_book",
+    },
+    "my-custom-toolbar": {
+        'width': '100%',  # 宽度
+        'uiColor' : '#E0F2F4',
+        "skin": "moono-lisa",
+        "toolbar": CUSTOM_TOOLBAR,
+        "toolbarGroups": None,
+        # "extraPlugins": ",".join(["image2", "codesnippet"]),
+        # "removePlugins": ",".join(["image"]),
+        "codeSnippet_theme": "school_book",
+    },
+}
+
 

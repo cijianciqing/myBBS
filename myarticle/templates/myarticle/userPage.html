@@ -7,7 +7,7 @@
                 <img class="media-object author-img" src="{{ article.user.avatar.url }}" alt="...">
                 <div class="media-body">
                     <h2>
-                        <a href="{% url 'myblog:articleDetail' article.user.username article.nid %}">{{ article.title }}</a>
+                        <a href="{% url 'myblog:articleDetail'  article.nid %}">{{ article.title }}</a>
                     </h2>发布于
                     {{ article.desc | safe }}
                 </div>

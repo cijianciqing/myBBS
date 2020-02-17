@@ -30,10 +30,10 @@
 <body>
 {#上侧导航栏#}
 <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #a8e9fd;">
-    <a class="navbar-brand" href="#">
-        <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
+    {{ username }}<a class="navbar-brand" href="#">
+        <img src="{{ userArticle.user.avatar.url }}" width="30" height="30"
              class="d-inline-block align-top" alt="">
-        {{ username }}的Blog
+        的Blog
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,26 +43,50 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" href="{% url 'index' %}">首页<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
-                    Dropdown
+                    个人博客
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">个人信息</a>
+                    <a class="dropdown-item" href="{% url 'myblog:user' userArticle.user.username %}">博客首页</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Something else here</a>
                 </div>
             </li>
+            {% comment %}<li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-            </li>
+            </li>{% endcomment %}
+
+        </ul>
+
+         <ul class="navbar-nav navbar-right" id="myNavbar_right">
+            {% if request.user.username %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'myblog:user' request.user.username %}">{{ request.user.username }}</a></li>
+                <li class="nav-item dropleft">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true"
+                       aria-expanded="false">我的博客<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item list-group-item list-group-item-info"><a href="#">个人信息</a>
+                        </li>
+                        <li class="dropdown-item list-group-item list-group-item-info"><a href="#">我的博客</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-item list-group-item list-group-item-warning"><a
+                                href="{% url 'myauth:logout' %}">注销</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li class="nav-item"><a href="{% url 'myauth:login' %}">登录</a></li>
+                <li class="nav-item"><a href="{% url 'myauth:register' %}">注册</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>
@@ -81,7 +105,7 @@
             {% endblock %}
         </div>
         <div class="col-lx-2 col-2">
-            <h3>右侧边栏暂时为空</h3>
+{#            <h3>右侧边栏暂时为空</h3>#}
         </div>
     </div>
 </div>

@@ -8,16 +8,15 @@ from myBBS import settings
 
 # Create your views here.
 
+#自定义404错误处理视图
+# def my_custom_page_not_found_view(request,exception):
+#     return render(request,"my404.html")
+
 # 注册的视图函数
 def register(request):
     if request.method == "POST":
         print(request.get_full_path())
-        # ret = {"status": 0, "msg": ""}
-        myResponseData = {}
         form_obj = forms.RegForm(request.POST)
-        # print("!"*100)
-        # print(request.POST)
-        # print("!" * 100)
         # 帮我做校验
         if form_obj.is_valid():
             # 校验通过，去数据库创建一个新的用户
@@ -31,14 +30,7 @@ def register(request):
             # 注册成功后，跳转到登陆页面
             myResponseData = wrap_json_response(code = ReturnCode.SUCCESS ,message=settings.LOGIN_URL)
         else:
-            # print("@" * 100)
-            # print(form_obj.errors)
-            # # form_obj.errors如果赋值给其他对象，则为字典类型
-            # print("@" * 100)
             myResponseData = wrap_json_response(data=form_obj.errors,code=ReturnCode.FAILED)
-        # print("@!" * 100)
-        # print(myResponseData)
-        # print("@!" * 100)
         return JsonResponse(data=myResponseData)
     # 生成一个form对象
     form_obj = forms.RegForm()
@@ -67,9 +59,6 @@ def login(request):
     user_obj = auth.authenticate(username= username, password=password)
     # 登陆成功处理
     if user_obj:
-        # print("@" * 100)
-        # print(username,"authenticated")
-        # print( "@"*100)
         # 该函数实现一个用户登录的功能。它本质上会在后端为该用户生成相关session数据
         auth.login(request, user_obj)
         return redirect(my_next_url)

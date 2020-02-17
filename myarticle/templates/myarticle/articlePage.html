@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+
+    <link rel="stylesheet" href="{% static 'bootstrap4.3.1/css/bootstrap.min.css ' %}">
+    <link rel="stylesheet" href="{% static "bootstraptable1.15.5/bootstrap-table.min.css" %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/all.css ' %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/v4-shims.css ' %}">
+    <link rel="stylesheet" href="{% static 'sweetalert/sweetalert.css ' %}">
+
+    {#    <!-- Custom styles for this template -->#}
+    <link rel="stylesheet" href="{% static 'myarticle/css/mystyle.css ' %}">
+    {##}
+    {#    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->#}
+    <script src="{% static "jquery/jquery-3.4.1.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "popper.js-1.16.0/umd/popper.min.js" %}"></script>
+    {#    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->#}
+    <script src="{% static "bootstrap4.3.1/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
+    <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
+
+</head>
+<body>
+{#上侧导航栏#}
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #a8e9fd;">
+
+    <a class="navbar-brand" href="{% url 'index' %}">
+        <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
+             class="d-inline-block align-top" alt="">
+        首页
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        </ul>
+
+        <ul class="navbar-nav navbar-right" id="myNavbar_right">
+            {% if request.user.username %}
+                {% if request.user.username == blogUser.username %}
+                    <li>
+                        <a href="{% url 'myblog:editArticle' userArticle.nid %}" class="btn btn-outline-primary "
+                           role="button" aria-pressed="true">
+                            <i class="fa fa-pencil-square-o " aria-hidden="true"></i>&nbsp;编辑文章</a>
+                    <li>
+                    <li>
+                        <a href="{% url 'myblog:deleteArticle' userArticle.nid %}" class="btn btn-outline-primary "
+                           role="button" aria-pressed="true">
+                            <i class="fa fa-scissors " aria-hidden="true"></i>&nbsp;删除文章</a>
+                    <li>
+                {% endif %}
+                <li class="nav-item"><a class="nav-link"
+                                        href="{% url 'myblog:user' request.user.username %}">{{ request.user.username }}</a>
+                </li>
+
+            {% else %}
+                <li class="nav-item"><a href="{% url 'myauth:login' %}">登录</a></li>
+                <li class="nav-item"><a href="{% url 'myauth:register' %}">注册</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<!-- 主页面 开始-->
+<div class=".container-fluid" id="myMainContent">
+
+    <div class="row">
+        {#左侧栏#}
+        <div class="col-lx-2 col-2  border-light border-right">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ blogUser.username }}的相关文章</h5>
+                    {% for article in article_list %}
+                        <p><a href="{% url 'myblog:articleDetail' article.pk %}">{{ article.title }}</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lx-8 col-8">
+
+            {% csrf_token %}
+
+            <div class="article-detail">
+                <div class="d-flex justify-content-center">
+                    <h1>{{ userArticle.title }}</h1>
+                    <h1 id="myArticleID" hidden>{{ userArticle.pk }}</h1>
+                </div>
+                <div class="d-flex justify-content-around mt-2">
+                    <div>创建人:{{ userArticle.user.username }}</div>
+                    <div>创建时间:{{ userArticle.create_time|date:'Y-m-d H:i:s' }}</div>
+                    <div id="MythumbCount">点赞数:{{ userArticle.up_count }}</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                {#        <div id="MythumbCount" class="d-flex justify-content-end">点赞数{{ userArticle.up_count }}</div>#}
+                <div class="myArticleContent rounded-lg"><p>{{ userArticle.content|safe }}</p></div>
+
+                <div class="dropdown-divider"></div>
+
+            </div>
+
+            {% if request.user.username %}
+                <div id="myThumbUp" class="d-flex justify-content-center">
+                    {% if articleUpDown.is_up %}
+                        <i class="fa fa-thumbs-up" aria-hidden="true">已点赞</i>
+                    {% else %}
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>
+                    {% endif %}
+                </div>
+                <p>文章历史评论</p>
+                <div class="myCommentTree">
+                </div>
+
+                <div class="div_comment">
+                    <p>昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
+                                 value="{{ request.user.username }}"></p>
+                    <p>评论内容</p>
+                    <textarea name="" id="comment_content" cols="60" rows="10"></textarea>
+                    <p>
+                        <button id="comment_btn">提交评论</button>
+                    </p>
+
+                </div>
+                {% comment %} {% else %}
+        <a href="{% url 'myauth:login' %}">登录评论</a>{% endcomment %}
+            {% endif %}
+        </div>
+        <div class="col-lx-2 col-2">
+            {#            <h3>右侧边栏暂时为空</h3>#}
+        </div>
+    </div>
+</div>
+</div>
+<!-- 主页面 结束-->
+<script type="application/javascript">
+
+    // 获取评论数据，展示评论树结构
+    $.ajax({
+        url: "{% url 'myblog:getCommentTreeData' userArticle.pk%}",
+        success: function (data) {
+            {#console.log(data);#}
+
+            $.each(data, function (index, comment_dict) {
+                var s = '<div class="comment_item" comment_id=' + comment_dict.pk + '><div class="myCommentTitle"><span style="color: gray">' + comment_dict.create_time_new + '</span> &nbsp;&nbsp;<a id="commentUserName" href="#"><span>' + comment_dict.user__username + '</span></a> <a href="#" class="ml-5 reply_btn text-decoration-none"><span>回复</span></a> </div> <div class="myCommentContent"><span>' + comment_dict.content + '</span></div></div>'
+                if (comment_dict.parent_comment_id) {
+                    // 子评论
+                    ppid = comment_dict.parent_comment_id;
+                    $("[comment_id=" + ppid + "]").append(s);
+                } else {   //  根评论
+                    $(".myCommentTree").append(s);
+                }
+            })
+
+
+        }
+    });
+
+    // 提交评论
+    var pid = "";
+    $("#comment_btn").click(function () {
+
+        var article_id = $("#myArticleID").text();
+        var content = $("#comment_content").val();
+        {#如果是子评论，对评论内容进行截取#}
+        if (pid) {
+            var index = content.indexOf("\n");
+            content = content.slice(index + 1)
+        }
+        $.ajax({
+            url: "{% url 'myblog:postComment' %}",
+            type: "post",
+            data: {
+                article_id: article_id,
+                content: content,
+                pid: pid,
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                console.log(data);
+                var create_time = data.create_time;
+                var content = data.content;
+                var username = data.username;
+
+
+                {#var comment_li = '<li class="list-group-item"><div><span style="color: gray">' + create_time + '</span> &nbsp;&nbsp; <a href=""><span>' + username + '</span></a></div> <div class="con"> <p> ' + content + ' </p> </div> </li>';#}
+                {##}
+                {#$(".comment_list").append(comment_li);#}
+
+                // 清空文本框
+                $("#comment_content").val('');
+                // 清空pid
+                pid = ""
+            }
+        })
+
+
+    });
+
+    // 回复按钮事件
+    $(document).on("click", ".reply_btn", function () {
+        $("#comment_content").focus();
+        var v = "@" + $("#commentUserName").text() + "\n";
+        $("#comment_content").val(v);
+        //pid赋值
+        pid = $(this).parent().parent().attr("comment_id")
+    })
+
+
+    // 点赞或踩灭
+    $("#myThumbUp").click(function () {
+            var is_up = $(this).find("i").hasClass("fa fa-thumbs-o-up");
+            var article_id = "{{ userArticle.pk }}";
+
+            $.ajax({
+                url: "{% url 'myblog:thumbUp' %}",
+                type: "post",
+                data: {
+                    is_up: is_up,
+                    article_id: article_id,
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                },
+                success: function (data) {
+                    console.log(data)
+                    $("#MythumbCount").text('点赞数' + data.data.thumbCount);
+                    if (is_up) {// 赞或者灭成功
+                        $("#myThumbUp").html('<i class="fa fa-thumbs-up" aria-hidden="true" >已点赞</i>')
+                    } else {
+                        $("#myThumbUp").html('<i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>')
+                    }
+
+                }
+            })
+
+
+        }
+    )
+
+</script>
+</body>
+</html>
+
+
+

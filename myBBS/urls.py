@@ -24,14 +24,19 @@ from django.views.static import serve
 
 from myarticle import views
 
+# handler404 = 'myauth.views.my_custom_page_not_found_view'
+
 urlpatterns = [
+    # ckeditor图片上传
+    # path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('ckeditor/', include('myarticle.utils.urls')),
     re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
     re_path(r'^media/(?P<path>.*)$', static.serve, kwargs={'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', static.serve, kwargs={'document_root': settings.STATIC_ROOT}, name='static'),
     path('admin/', admin.site.urls),
 
     # path('', TemplateView.as_view(template_name="index.html")),
-    path('', views.index),
+    path('', views.index,name='index'),
 
     path('1/', TemplateView.as_view(template_name="index2.html")),
 

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+
+    <link rel="stylesheet" href="{% static 'bootstrap4.3.1/css/bootstrap.min.css ' %}">
+    <link rel="stylesheet" href="{% static "bootstraptable1.15.5/bootstrap-table.min.css" %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/all.css ' %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/v4-shims.css ' %}">
+    <link rel="stylesheet" href="{% static 'sweetalert/sweetalert.css ' %}">
+
+    {#    <!-- Custom styles for this template -->#}
+    <link rel="stylesheet" href="{% static 'myarticle/css/mystyle.css ' %}">
+    {##}
+    {#    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->#}
+    <script src="{% static "jquery/jquery-3.4.1.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "popper.js-1.16.0/umd/popper.min.js" %}"></script>
+    {#    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->#}
+    <script src="{% static "bootstrap4.3.1/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
+    <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
+
+</head>
+<body>
+{#上侧导航栏#}
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #a8e9fd;">
+    <a class="navbar-brand" href="{% url 'index' %}">
+        <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
+             class="d-inline-block align-top" alt="">
+        首页
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class=" mr-auto">
+            <h1>{{ blogUser.username }}的博客</h1>
+        </div>
+
+        <ul class="navbar-nav ml-auto" id="myNavbar_right">
+            {% if request.user.username %}
+                {% if request.user.username == blogUser.username %}
+                    <li>
+                        <a href="{% url 'myblog:createArticle' %}" class="btn btn-outline-primary " role="button"
+                           aria-pressed="true">
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>&nbsp;写文章</a>
+                    <li>
+                {% endif %}
+                <li class="nav-item"><a class="nav-link"
+                                        href="{% url 'myblog:user' request.user.username %}">{{ request.user.username }}</a>
+                </li>
+            {% else %}
+                <li class="nav-item"><a href="{% url 'myauth:login' %}">登录</a></li>
+                <li class="nav-item"><a href="{% url 'myauth:register' %}">注册</a></li>
+            {% endif %}
+        </ul>
+
+    </div>
+</nav>
+<!-- 主页面 开始-->
+{#<div class=".container-fluid" id="myMainContent">#}
+
+
+<div class="row">
+    {#左侧栏#}
+
+
+    <div class="col-lx-2 col-2 ">
+
+        <div class="card mt-2 ml-5 position-fixed ">
+            <div class="card-body">
+                <h5 class="card-title">文章分类</h5>
+                {% for category in category_list %}
+                    <p>{{ category.title }}({{ category.c }})</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lx-8 col-8">
+        {% for article in userArticles %}
+            <div>
+                <div class="media " id="myArticleShortcut">
+                    <img class="media-object author-img" src="{{ article.user.avatar.url }}" alt="...">
+                    <div class="media-body">
+                        <h4>
+                            <a href="{% url 'myblog:articleDetail'  article.nid %}">{{ article.title }}</a>
+                        </h4>
+                        {{ article.desc | safe }}
+                    </div>
+                </div>
+
+                <div class="article-footer">
+                        <span><a
+                                href="{% url 'myblog:user' article.user.username %}">{{ article.user.username }}</a></span>发布于
+                    <span>{{ article.create_time|date:'Y-m-d H:i:s' }}</span>
+                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>点赞({{ article.up_count }})
+                    <i class="fa fa-comment"></i>评论({{ article.comment_count }})
+
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="col-lx-2 col-2">
+        {#            <h3>右侧边栏暂时为空</h3>#}
+    </div>
+</div>
+{#</div>#}
+<!-- 主页面 结束-->
+</body>
+</html>
+

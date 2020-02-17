@@ -1,5 +1,5 @@
 from django.db import models
-
+from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 from myauth.models import MyUserInfo
 
@@ -60,8 +60,20 @@ class Article(models.Model):
     nid = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50, verbose_name="文章标题")  # 文章标题
     desc = models.CharField(max_length=255)  # 文章描述
-    create_time = models.DateTimeField()  # 创建时间
-
+    create_time = models.DateTimeField(auto_now_add=True)  # 创建时间
+    content = RichTextUploadingField(verbose_name="文章内容",
+                                     default='',
+                                     null=True,
+                                     # CKEDITOR.config.extraPlugins:
+                                     # config_name='my-custom-toolbar',
+                                     extra_plugins=['codesnippet'],
+                                     # CKEDITOR.plugins.addExternal(...)
+                                     external_plugin_resources=[(
+                                         'codesnippet',
+                                         '/static/ckeditor5-build-classic/codesnippet/',
+                                         'plugin.js',
+                                     )],
+                                     )
     # 评论数
     comment_count = models.IntegerField(verbose_name="评论数", default=0)
     # 点赞数
@@ -69,9 +81,10 @@ class Article(models.Model):
     # 踩
     down_count = models.IntegerField(verbose_name="踩数", default=0)
 
-    category = models.ForeignKey(to="Category", to_field="nid", null=True,on_delete=models.SET_NULL)
+    category = models.ForeignKey(verbose_name="分类",to="Category",  null=True,on_delete=models.SET_NULL)
     user = models.ForeignKey(to="myauth.MyUserInfo", to_field="nid",null=True,on_delete=models.SET_NULL)
     tags = models.ManyToManyField(  # 中介模型
+        verbose_name="标签",
         to="Tag",
         through="Article2Tag",
         through_fields=("article", "tag"),  # 注意顺序！！！
@@ -85,17 +98,20 @@ class Article(models.Model):
         verbose_name_plural = verbose_name
 
 
-class ArticleDetail(models.Model):
-    """
-    文章详情表
-    """
-    nid = models.AutoField(primary_key=True)
-    content = models.TextField()
-    article = models.OneToOneField(to="Article", to_field="nid",null=True,on_delete=models.SET_NULL)
 
-    class Meta:
-        verbose_name = "文章详情"
-        verbose_name_plural = verbose_name
+# class ArticleDetail(models.Model):
+#     """
+#     文章详情表
+#     """
+#     nid = models.AutoField(primary_key=True)
+#     content = models.TextField()
+#     article = models.OneToOneField(to="Article", to_field="nid",null=True,on_delete=models.SET_NULL)
+#
+#     class Meta:
+#         verbose_name = "文章详情"
+#         verbose_name_plural = verbose_name
+
+
 
 
 class Article2Tag(models.Model):

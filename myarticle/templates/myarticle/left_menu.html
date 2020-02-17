@@ -2,7 +2,7 @@
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">文章分类</h5>
+        <h5 class="card-title">{{ username }}的文章分类</h5>
          {% for category in category_list %}
             <p>{{ category.title }}({{ category.c }})</p>
         {% endfor %}

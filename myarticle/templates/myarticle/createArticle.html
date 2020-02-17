@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+
+    <link rel="stylesheet" href="{% static 'bootstrap4.3.1/css/bootstrap.min.css ' %}">
+    <link rel="stylesheet" href="{% static "bootstraptable1.15.5/bootstrap-table.min.css" %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/all.css ' %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/v4-shims.css ' %}">
+    <link rel="stylesheet" href="{% static 'sweetalert/sweetalert.css ' %}">
+
+    {#    <!-- Custom styles for this template -->#}
+    <link rel="stylesheet" href="{% static 'myarticle/css/mystyle.css ' %}">
+    {##}
+    {#    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->#}
+    <script src="{% static "jquery/jquery-3.4.1.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "popper.js-1.16.0/umd/popper.min.js" %}"></script>
+    {#    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->#}
+    <script src="{% static "bootstrap4.3.1/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
+    <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
+
+    {#    ckeitor相关的media#}
+    {{ form_obj.media }}
+
+</head>
+<body>
+{#上侧导航栏#}
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #a8e9fd;">
+    <a class="navbar-brand" href="{% url 'index' %}">
+        <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
+             class="d-inline-block align-top" alt="">
+        首页
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+
+        </ul>
+
+        <ul class="navbar-nav navbar-right" id="myNavbar_right">
+            {% if request.user.username %}
+                <li>
+                    <a href="#" class="btn btn-outline-primary " id="mySubmitArticle" role="button" aria-pressed="true">
+                        <i class="fa fa-map-marker" aria-hidden="true"></i>&nbsp;&nbsp;提交文章</a>
+                <li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="{% url 'myblog:user' request.user.username %}">{{ request.user.username }}</a>
+                </li>
+            {% else %}
+                <li class="nav-item"><a href="{% url 'myauth:login' %}">登录</a></li>
+                <li class="nav-item"><a href="{% url 'myauth:register' %}">注册</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<!-- 主页面 开始-->
+<div class=".container-fluid" id="myMainContent">
+
+    <div class="row">
+        {#        <div class="col-8 offset-2 d-flex justify-content-center">#}
+        <div class="col-8 offset-2">
+            <form method="post" action="#">
+                {% csrf_token %}
+                <input type="hidden" id="myIsUpdate" value= {{ form_obj.is_update }}>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label d-flex justify-content-center"
+                           for="{{ form_obj.title.id_for_label }}">{{ form_obj.title.label }}</label>
+                    <div class="col-10">
+                        {{ form_obj.title }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label d-flex justify-content-center"
+                           for="{{ form_obj.category.id_for_label }}">{{ form_obj.category.label }}</label>
+                    <div class="col-10 ">
+                        {{ form_obj.category }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label d-flex justify-content-center"
+                           for="{{ form_obj.tags.id_for_label }}">{{ form_obj.tags.label }}</label>
+                    <div class="col-10">
+                        {{ form_obj.tags }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label d-flex justify-content-center"
+                           for="{{ form_obj.content.id_for_label }}">{{ form_obj.content.label }}</label>
+                    <div class="col-10">
+                        {{ form_obj.content }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-2">
+
+        </div>
+    </div>
+</div>
+
+<!-- 主页面 结束-->
+<script type="application/javascript">
+    {% if  currentArticleID %}
+        var myCrID = {{ currentArticleID }}
+    {% endif %}
+
+
+    // AJAX提交注册的数据
+    $("#mySubmitArticle").click(function () {
+
+        // 取到用户填写的注册数据，向后端发送AJAX请求
+        {#var formData = new FormData();#}
+        {#formData.append("username", $("#id_username").val());#}
+        {#formData.append("password", $("#id_password").val());#}
+        {#formData.append("re_password", $("#id_re_password").val());#}
+        {#formData.append("email", $("#id_email").val());#}
+        {#formData.append("avatar", $("#id_avatar")[0].files[0]);#}
+        {#formData.append("csrfmiddlewaretoken", $("[name='csrfmiddlewaretoken']").val());#}
+        var myTags = []
+        $("#id_tags option:selected").each(function () {
+            myTags.push($(this).val())
+        })
+        var myUrl = ''
+
+        if ($("#myIsUpdate").val()) {
+            myUrl = "{% url 'myblog:editArticle' currentArticleID %}"
+        } else {
+            myUrl = "{% url 'myblog:createArticle' %}"
+        }
+        console.log(myUrl)
+        $.ajax({
+            url: myUrl,
+            type: "post",
+            {#告诉jquery不处理数据#}
+            {#processData: false,#}
+            {#告诉jquery不设置contentType#}
+            {#contentType: false,#}
+            data: {
+                "title": $("#id_title").val(),
+                "category": $("#id_category").val(),
+                "tags": JSON.stringify(myTags),
+                "content": CKEDITOR.instances.id_content.getData(),
+                "csrfmiddlewaretoken": $("[name = 'csrfmiddlewaretoken']").val()  // 使用jQuery取出csrfmiddlewaretoken的值，拼接到data中
+            },
+            success: function (data) {
+                if (data.result_code == -100) {
+                    // 有错误就展示错误
+                    // console.log(data.msg);
+                    // 将报错信息填写到页面上
+                    $.each(data.data, function (k, v) {
+                        // console.log("id_"+k, v[0]);
+                        // console.log($("#id_"+k));
+                        {#$("#id_" + k).next("span").text(v[0]).parent().parent().addClass("is-invalid");#}
+                        {#console.log($("#id_" + k).next("div").text());#}
+                        $("#id_" + k).addClass("is-invalid").next("div").text(v[0]);
+                        {#$("#id_" + k).next(".invalid-feedback").text(v[0]);#}
+                    })
+
+                } else {
+                    // 没有错误就跳转到指定页面
+                    location.href = data.message;
+                }
+            }
+        })
+    });
+</script>
+</body>
+</html>
+
+
+

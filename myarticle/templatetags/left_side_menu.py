@@ -17,6 +17,7 @@ register = template.Library()
 
 @register.inclusion_tag("myarticle/left_menu.html")
 def get_left_menu(username):
+
     user = MyUserInfo.objects.filter(username=username).first()
     blog = user.blog
     # 查询文章分类及对应的文章数
@@ -29,6 +30,7 @@ def get_left_menu(username):
     # ).values("archive_ym").annotate(c=Count("nid")).values("archive_ym", "c")
 
     return {
+        "username": username,
         "category_list" :category_list,
         # "tag_list": tag_list,
         # "archive_list": archive_list

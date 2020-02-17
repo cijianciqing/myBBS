@@ -1,8 +1,8 @@
 
 /* 博客主页面 自定义样式*/
 .author-img {
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
 }
 
@@ -29,3 +29,12 @@
 #myArticleShortcut {
     margin-top: 30px;
 }
+
+.myCommentTree .comment_item{
+    margin-left: 20px;
+}
+
+.myArticleContent {
+    margin-top: 30px;
+}
+

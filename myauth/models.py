@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 # Create your models here.
@@ -20,3 +22,9 @@ class MyUserInfo(AbstractUser):
 
     def __str__(self):
         return self.username
+
+def get_custom_anon_user(User):
+    return User(
+        username='AnonymousUser',
+        create_time=datetime.datetime(2020, 1, 1),
+    )

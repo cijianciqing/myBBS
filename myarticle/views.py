@@ -30,13 +30,33 @@ def user(request, username):
     user = MyUserInfo.objects.get(username=username)
     userArticles = models.Article.objects.filter(user=user)
     # 查询文章作者文章的 分类及对应的文章数
-    category_list = models.Category.objects.filter(blog=user.blog).annotate(c=Count("article")).values("title", "c")
+    category_list = models.Category.objects.annotate(c=Count("article")).values("title", "c")
+    #查询文章作者的标签
+    tag_list = models.Tag.objects.filter(blog=user.blog).values('nid', 'title')
+    print(tag_list)
     return render(request,'myarticle/blogPage.html',context={
         # 'user': user,
         # 'username': username,
         'blogUser': user,
         'userArticles': userArticles,
-        'category_list': category_list
+        'category_list': category_list,
+        'tag_list':tag_list
+        # 'userCatalogs': userCatalogs,
+    })
+
+# 进入标签的页面
+def tagToArticle(request, tagID):
+    myTag = models.Tag.objects.get(pk=tagID)
+    # 获取标签id对应的文档
+    userArticles = models.Article.objects.filter(tags=myTag)
+    #获取标签对应的用户
+    tag2User = userArticles[0].user
+    return render(request, 'myarticle/tagPage.html', context={
+        # 'user': user,
+        # 'username': username,
+        'blogUser': tag2User,
+        'userArticles': userArticles,
+        'myTag': myTag
         # 'userCatalogs': userCatalogs,
     })
 
@@ -208,3 +228,5 @@ def deleteArticle(request,articleID):
     else:
         exceptionMessage="Warning: "+request.user.username+" 没有此文档的删除权限!!!"
         raise PermissionDenied(exceptionMessage)
+
+

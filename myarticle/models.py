@@ -25,8 +25,8 @@ class Category(models.Model):
     个人博客文章分类
     """
     nid = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=32)  # 分类标题
-    blog = models.ForeignKey(to="Blog", to_field="nid",null=True,on_delete=models.SET_NULL)  # 外键关联博客，一个博客站点可以有多个分类
+    title = models.CharField(max_length=32,unique=True)  # 分类标题
+    # blog = models.ForeignKey(to="Blog", to_field="nid",null=True,on_delete=models.SET_NULL)  # 外键关联博客，一个博客站点可以有多个分类
 
     def __str__(self):
         return self.title
@@ -34,7 +34,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = "文章分类"
         verbose_name_plural = verbose_name
-        unique_together = (("blog", "title"),)
+        # unique_together = (("blog", "title"),)
 
 
 class Tag(models.Model):

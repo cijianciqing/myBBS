@@ -42,7 +42,7 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <div class=" mr-auto">
-            <h1>{{ blogUser.username }}的博客</h1>
+            <h1>{{ blogUser.username }}的博客 标签--{{ myTag }}</h1>
         </div>
 
         <ul class="navbar-nav ml-auto" id="myNavbar_right">
@@ -75,14 +75,7 @@
 
     <div class="col-lx-2 col-2 ">
 
-        <div class="card mt-2 ml-5 position-fixed ">
-            <div class="card-body">
-                <h5 class="card-title">文章分类</h5>
-                {% for category in category_list %}
-                    <p>{{ category.title }}({{ category.c }})</p>
-                {% endfor %}
-            </div>
-        </div>
+
     </div>
     <div class="col-lx-8 col-8">
         {% for article in userArticles %}
@@ -110,59 +103,12 @@
         {% endfor %}
     </div>
     <div class="col-lx-2 col-2">
-        <div class="card  position-fixed mt-2">
-            <div class="card-header">
-                {{ blogUser.username }}的标签
-            </div>
-            <div id="AllTags" class="card-body">
-                {% for mytag in tag_list %}
-                    <a href="{% url 'myblog:tagToArticles' mytag.nid %}" class="btn mt-1">{{ mytag.title }}</a>
-                {% endfor %}
-            </div>
-            <div class="card-footer">
-                <a href="#" class="btn btn-primary ">添加标签</a>
-            </div>
-        </div>
+
     </div>
 </div>
 </div>
 {#</div>#}
 <!-- 主页面 结束-->
-<script type="text/javascript">
-    $(document).ready(function () {
-        var tags_a = $("#AllTags a");
-        tags_a.each(function () {
-            var x = 9;
-            var y = 0;
-            var rand = parseInt(Math.random() * (x - y ) + y);
-            var buttonCss =''
-            switch (rand) {
-                case 1:
-                    buttonCss='btn-dark';
-                    break;
-                case 2:
-                    buttonCss='btn-success';
-                    break;
-                case 3:
-                    buttonCss='btn-danger';
-                    break;
-                case 4:
-                    buttonCss='btn-success';
-                    break;
-                case 5:
-                    buttonCss='btn-warning';
-                    break;
-                case 6:
-                    buttonCss='btn-light';
-                    break;
-                default:
-                    buttonCss='btn-info';
-
-            }
-            $(this).addClass(buttonCss);
-        });
-    })
-</script>
 
 </body>
 </html>

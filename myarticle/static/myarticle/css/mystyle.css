@@ -1,8 +1,8 @@
 
 /* 博客主页面 自定义样式*/
 .author-img {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     margin-right: 10px;
 }
 
@@ -19,14 +19,13 @@
     margin-top: 10px;
 }
 
+/*右侧导航栏 每个li的间距*/
 #myNavbar_right li{
     margin-right: 15px;
 
 }
 
-#myMainContent {
-    margin-top: 30px;
-}
+
 #myArticleShortcut {
     margin-top: 30px;
 }

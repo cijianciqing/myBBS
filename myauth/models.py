@@ -23,6 +23,10 @@ class MyUserInfo(AbstractUser):
     def __str__(self):
         return self.username
 
+    @property
+    def avatarURL(self):
+        return self.avatar.url
+
 def get_custom_anon_user(User):
     return User(
         username='AnonymousUser',

@@ -46,6 +46,7 @@ from myarticle import models
 class CreateArticleForm(forms.ModelForm):
     # 重写父类的init方法,获取当前用户自己的tags
     def __init__(self,is_update,currentUser, *args, **kwargs):
+        # print('this is init method in CreateArticleForm')
         super().__init__(*args, **kwargs)
         self.is_update = is_update
         self.fields["category"].widget.choices = models.Category.objects.all().values_list('nid', 'title')
@@ -55,10 +56,46 @@ class CreateArticleForm(forms.ModelForm):
         self.fields['tags'].widget.attrs.update({'class': 'form-control'})
 
         self.fields['title'].widget.attrs.update({'class': 'form-control'})
+        self.fields['desc'].widget.attrs.update({'class': 'form-control'})
 
 
     class Meta:
-        fields = ['title', 'content', 'category', 'tags']  # 引入全部字段
+        fields = ['title','desc', 'content', 'category', 'tags']  # 引入全部字段
         model = models.Article
+        error_messages = {
+            'title': {
+                'required': '字段不能为空ya',
+                'max_length': "超过最大长度了ya",
+            },
+        }
+
+class CommentForm(forms.ModelForm):
+    # 重写父类的init方法,获取当前用户自己的tags
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields['content'].widget.attrs.update({'cols':60, 'rows':10})
+    #     # print('this is init method in CreateArticleForm')
+    #     super().__init__(*args, **kwargs)
+    #     self.fields["category"].widget.choices = models.Category.objects.all().values_list('nid', 'title')
+    #     self.fields['category'].widget.attrs.update({'class': 'form-control'})
+    #
+    #     self.fields["tags"].widget.choices = models.Tag.objects.filter(blog=currentUser.blog).values_list('nid','title')
+    #     self.fields['tags'].widget.attrs.update({'class': 'form-control'})
+    #
+    #     self.fields['title'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['desc'].widget.attrs.update({'class': 'form-control'})
+    class Meta:
+        model = models.Comment
+        fields = ['content']  # 引入全部字段
+        # widgets = {
+        #     'content': RichTextUploadingFormField( attrs= {'cols':60, 'rows':10}),
+        # }
+        # error_messages = {
+        #     'title': {
+        #         'required': '字段不能为空ya',
+        #         'max_length': "超过最大长度了ya",
+        #     },
+        # }
+
 
 

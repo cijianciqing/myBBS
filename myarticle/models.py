@@ -9,7 +9,7 @@ class Blog(models.Model):
     """
     nid = models.AutoField(primary_key=True)
     title = models.CharField(max_length=64)  # 个人博客标题
-    site = models.CharField(max_length=32, unique=True)  # 个人博客后缀
+    # site = models.CharField(max_length=32, unique=True)  # 个人博客后缀
     theme = models.CharField(max_length=32)  # 博客主题
 
     def __str__(self):
@@ -48,9 +48,16 @@ class Tag(models.Model):
     def __str__(self):
         return self.title
 
+    def tag2Json(self):
+        return {"nid":self.nid,
+                "title":self.title,
+                "blog":self.blog_id
+                }
+
     class Meta:
         verbose_name = "标签"
         verbose_name_plural = verbose_name
+        unique_together=(("title","blog"),)
 
 
 class Article(models.Model):
@@ -58,12 +65,13 @@ class Article(models.Model):
     文章
     """
     nid = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=50, verbose_name="文章标题")  # 文章标题
-    desc = models.CharField(max_length=255)  # 文章描述
+    title = models.CharField(max_length=50, verbose_name="文章标题",blank=False)  # 文章标题
+    desc = models.TextField(verbose_name="文章描述",max_length=500)  # 文章描述
     create_time = models.DateTimeField(auto_now_add=True)  # 创建时间
     content = RichTextUploadingField(verbose_name="文章内容",
                                      default='',
                                      null=True,
+                                     blank=True,
                                      # CKEDITOR.config.extraPlugins:
                                      # config_name='my-custom-toolbar',
                                      extra_plugins=['codesnippet'],
@@ -84,6 +92,7 @@ class Article(models.Model):
     category = models.ForeignKey(verbose_name="分类",to="Category",  null=True,on_delete=models.SET_NULL)
     user = models.ForeignKey(to="myauth.MyUserInfo", to_field="nid",null=True,on_delete=models.SET_NULL)
     tags = models.ManyToManyField(  # 中介模型
+
         verbose_name="标签",
         to="Tag",
         through="Article2Tag",
@@ -150,7 +159,18 @@ class Comment(models.Model):
     nid = models.AutoField(primary_key=True)
     article = models.ForeignKey(to="Article", to_field="nid",null=True,on_delete=models.SET_NULL)
     user = models.ForeignKey(to="myauth.MyUserInfo", to_field="nid",null=True,on_delete=models.SET_NULL)
-    content = models.CharField(max_length=255)  # 评论内容
+    content = RichTextUploadingField(verbose_name="评论内容",
+                                     default='',
+                                     null=False,
+                                     blank=False,
+                                     config_name='my-custom-toolbar',
+                                     extra_plugins=['codesnippet'],
+                                     external_plugin_resources=[(
+                                         'codesnippet',
+                                         '/static/ckeditor5-build-classic/codesnippet/',
+                                         'plugin.js',
+                                     )],
+                                     )
     create_time = models.DateTimeField(auto_now_add=True)
     parent_comment = models.ForeignKey("self", null=True, blank=True,on_delete=models.SET_NULL)  # blank=True 在django admin里面可以不填
 

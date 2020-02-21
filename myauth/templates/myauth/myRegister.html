@@ -17,9 +17,9 @@
                     <div class="form-group">
                         <label for="{{ form_obj.username.id_for_label }}">{{ form_obj.username.label }}</label>
                         {{ form_obj.username }}
-{#                        <div class="valid-feedback">#}
-{#                            Looks good!#}
-{#                        </div>#}
+                        {#                        <div class="valid-feedback">#}
+                        {#                            Looks good!#}
+                        {#                        </div>#}
                         <div class="invalid-feedback">
                         </div>
                     </div>
@@ -28,9 +28,6 @@
                         <label for="{{ form_obj.password.id_for_label }}">{{ form_obj.password.label }}</label>
 
                         {{ form_obj.password }}
-{#                        <div class="valid-feedback">#}
-{#                            Looks good01!#}
-{#                        </div>#}
                         <div class="invalid-feedback">
                         </div>
 
@@ -40,21 +37,16 @@
                         <label for="{{ form_obj.re_password.id_for_label }}">{{ form_obj.re_password.label }}</label>
 
                         {{ form_obj.re_password }}
-{#                        <div class="valid-feedback">#}
-{#                            Looks good02!#}
-{#                        </div>#}
+
                         <div class="invalid-feedback">
                         </div>
 
                     </div>
 
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="{{ form_obj.email.id_for_label }}">{{ form_obj.email.label }}</label>
 
                         {{ form_obj.email }}
-{#                        <div class="valid-feedback">#}
-{#                            Looks good03!#}
-{#                        </div>#}
                         <div class="invalid-feedback">
                             Looks baddd!
                         </div>
@@ -64,7 +56,8 @@
                     <div class="form-group">
                         <label>头像</label>
 
-                        <label for="id_avatar"><img id="avatar-img" src="{% static 'myauth/default.png' %}" alt=""></label>
+                        <label for="id_avatar"><img id="avatar-img" src="{% static 'myauth/default.png' %}"
+                                                    alt=""></label>
                         <input accept="image/*" type="file" name="avatar" id="id_avatar" style="display: none">
 
                     </div>
@@ -115,12 +108,8 @@
                         // console.log(data.msg);
                         // 将报错信息填写到页面上
                         $.each(data.data, function (k, v) {
-                            // console.log("id_"+k, v[0]);
-                            // console.log($("#id_"+k));
-                            {#$("#id_" + k).next("span").text(v[0]).parent().parent().addClass("is-invalid");#}
-                            {#console.log($("#id_" + k).next("div").text());#}
+
                             $("#id_" + k).addClass("is-invalid").next("div").text(v[0]);
-                            {#$("#id_" + k).next(".invalid-feedback").text(v[0]);#}
                         })
 
                     } else {

@@ -24,123 +24,131 @@
     <script src="{% static "bootstrap4.3.1/js/bootstrap.min.js" %}"></script>
     <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
     <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
-
+    <style>
+        body {
+            min-height: 75rem;
+            padding-top: 4.5rem;
+        }
+    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">
-        <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
-             class="d-inline-block align-top" alt="">
-        我的博客系统
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+{#顶层导航#}
+<div class="fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
+                 class="d-inline-block align-top" alt="">
+            我的博客系统
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-{#        <ul class="navbar-nav mr-auto">#}
-{#            <li class="nav-item active">#}
-{#                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>#}
-{#            </li>#}
-{#            <li class="nav-item">#}
-{#                <a class="nav-link" href="#">Link</a>#}
-{#            </li>#}
-{#            <li class="nav-item dropdown">#}
-{#                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"#}
-{#                   aria-haspopup="true" aria-expanded="false">#}
-{#                    Dropdown#}
-{#                </a>#}
-{#                <div class="dropdown-menu" aria-labelledby="navbarDropdown">#}
-{#                    <a class="dropdown-item" href="#">Action</a>#}
-{#                    <a class="dropdown-item" href="#">Another action</a>#}
-{#                    <div class="dropdown-divider"></div>#}
-{#                    <a class="dropdown-item" href="#">Something else here</a>#}
-{#                </div>#}
-{#            </li>#}
-{#            <li class="nav-item">#}
-{#                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
-{#            </li>#}
-{#        </ul>#}
-        <ul class="navbar-nav ml-auto" id="myNavbar_right">
-            {% if request.user.username %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'myblog:user' request.user.username %}">{{ request.user.username }}</a></li>
-                <li class="nav-item dropleft">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">个人中心<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-item list-group-item list-group-item-info"><a href="#">Another action</a>
-                        </li>
-                        <li class="dropdown-item list-group-item list-group-item-info"><a href="#">Something else
-                            here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li class="dropdown-item list-group-item list-group-item-warning"><a
-                                href="{% url 'myauth:logout' %}">注销</a></li>
-                    </ul>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+            <ul class="navbar-nav ml-auto" id="myNavbar_right">
+                <li>
+                    <form class="form-inline mt-2 mt-md-0" action="#">
+                        <input id="mySearchInfo" class="form-control mr-sm-2" type="text" placeholder="Search"
+                               aria-label="Search">
+                        <button id="mySearchButton" class="btn btn-outline-success my-2 my-sm-0">Search</button>
+                    </form>
                 </li>
-            {% else %}
-                <li class="nav-item"><a href="{% url 'myauth:login' %}">登录</a></li>
-                <li class="nav-item"><a href="{% url 'myauth:register' %}">注册</a></li>
-            {% endif %}
-        </ul>
-        {#        <form class="form-inline my-2 my-lg-0">#}
-        {#            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">#}
-        {#            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>#}
-        {#        </form>#}
-    </div>
-</nav>
+
+                {% if request.user.username %}
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'myblog:user' request.user.username %}">{{ request.user.username }}</a>
+                    </li>
+                    <li class="nav-item dropleft">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">个人中心<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item list-group-item list-group-item-info"><a href="#">Another
+                                action</a>
+                            </li>
+                            <li class="dropdown-item list-group-item list-group-item-info"><a href="#">Something else
+                                here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-item list-group-item list-group-item-warning"><a
+                                    href="{% url 'myauth:logout' %}">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a href="{% url 'myauth:login' %}">登录</a></li>
+                    <li class="nav-item"><a href="{% url 'myauth:register' %}">注册</a></li>
+                {% endif %}
+            </ul>
+            {#        <form class="form-inline my-2 my-lg-0">#}
+            {#            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">#}
+            {#            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>#}
+            {#        </form>#}
+        </div>
+    </nav>
+    {#分类导航#}
+    <ul id="wqn_CategoryNav" class="nav nav-tabs justify-content-center" style="background: #dbdee2">
+        <li class="nav-item" id="wqn_allCategory">
+            <a class="nav-link active" href="javascript:void(0)" id="9999">全部文章分类</a>
+        </li>
+        {% for wqn_catelog in catelgory_list %}
+            <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" id="{{ wqn_catelog.nid }}">{{ wqn_catelog.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
 <!-- 主页面 开始-->
-<div class=".container-fluid" id="myMainContent">
+<div class="container-fluid mt-5" id="myMainContent">
 
-    <div class="container">
     <div class="row">
-
-        <div class="col-lx-2 col-2">
-            <div class="card">
+        <div class="col-3">
+            <div class="card  ">
                 <div class="card-body">
                     <div class="panel-heading">左侧广告位一</div>
                     <h5 class="card-title">Card title</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                        thesdsdssdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasd
                         card's content.</p>
                 </div>
             </div>
             <br/>
-            <div class="card">
+            <div class="card ">
                 <div class="card-body">
                     <div class="panel-heading">左侧广告位二</div>
                     <h5 class="card-title">Card title</h5>
                     {#                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
                     <h8> Some quick example text to build on the card title and make up the bulk of
                         the
-                        card's content.</h8>
+                        card's content.
+                    </h8>
                 </div>
             </div>
         </div>
-        <div class="col-lx-8 col-8">
+        <div class="col-6 align-items-center " id="myArticlesPart">
             {% for article in article_list %}
-                <div>
+                <div class="myArticle">
                     <div class="media" id="myArticleShortcut">
-                        <img class="media-object author-img" src="{{ article.user.avatar.url }}" alt="...">
+                        <img class="media-object author-img align-self-center" src="{{ article.user.avatar.url }}"
+                             alt="...">
                         <div class="media-body">
-                            <h2><a href="{% url 'myblog:articleDetail' article.nid %}">{{ article.title}}</a></h2>发布于
-                            {{ article.desc | safe }}
+                            <h2><a href="{% url 'myblog:articleDetail' article.nid %}">{{ article.title }}</a></h2>
+                            {{ article.desc }}
                         </div>
                     </div>
-
-                    <div class="article-footer">
-                        <span><a href="{% url 'myblog:user' article.user.username %}">{{ article.user.username }}</a></span>发布于
-                        <span>{{ article.create_time|date:'Y-m-d H:i:s' }}</span>
+                    <div class="article-footer ">
+                        <span><a
+                                href="{% url 'myblog:user' article.user.username %}">{{ article.user.username }}</a></span>
+                        发布于<span>{{ article.create_time|date:'Y-m-d H:i:s' }}</span>
                         <i class="fa fa-thumbs-up" aria-hidden="true"></i>点赞({{ article.up_count }})
                         <i class="fa fa-comment"></i>评论({{ article.comment_count }})
-
-
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <div class="col-lx-2 col-2">
+        <div class="col-3">
             <div class="card text-white bg-primary">
                 <div class="card-body">
                     <div class="panel-heading">右侧广告位一</div>
@@ -164,11 +172,141 @@
             </div>
         </div>
     </div>
-    </div>
 </div>
+<a class="btn btn-default" href="#" role="button" style="position:fixed;right:0;bottom:0">
+    回到顶部
+</a>
 <!-- 主页面 结束-->
 <script>
-    {#console.log('{{ perms }}')#}
+    {#    将返回的文章列表添加到对应的页面#}
+
+    function wqn_Append_Articles(articleList) {
+        for (var i = 0; i < articleList.length; i++) {
+            var myMedia = '<div class="myArticle">'
+                + '<div class="media" id="myArticleShortcut">'
+                + '<img class="media-object author-img align-self-center" src="' + articleList[i].avatarURL + '"alt="..." >'
+                + '<div class="media-body">'
+                + '<h2><a href="/myBlog/article/' + articleList[i].pk + '">' + articleList[i].title + '</a></h2>'
+                + articleList[i].desc
+                + '</div></div>'
+                + '<div class="article-footer">'
+                + '<span><a href="/myBlog/' + articleList[i].username + '">' + articleList[i].username + '</a></span>'
+                + '发布于<span>' + articleList[i].create_time_new + '</span>'
+                + '<i class="fa fa-thumbs-up ml-2" aria-hidden="true"></i>点赞(' + articleList[i].up_count + ')'
+                + '<i class="fa fa-comment ml-2"></i>评论(' + articleList[i].comment_count + ')'
+                + '</div>'
+                + '</div>'
+            $("#myArticlesPart").append(myMedia);
+        }
+    }
+
+    {#    清空原有页面内容，然后将结果附加到页面中#}
+
+    function searchArticles(wqn_params) {
+        $.ajax({
+            url: "/myBlog/searchArticle/",
+            data: wqn_params,
+            method: 'get',
+            success: function (data) {
+
+                $("#myArticlesPart div").remove();
+                var articleList = data.data.articleList;
+                console.log(typeof (articleList));
+                wqn_Append_Articles(articleList);
+
+            }
+        })
+    }
+
+    {#直接将结果附加到现有页面,用于流加载#}
+
+    function searchArticles02(wqn_params) {
+        $.ajax({
+            url: "/myBlog/searchArticle/",
+            data: wqn_params,
+            method: 'get',
+            success: function (data) {
+                var articleList = data.data.articleList;
+                console.log(typeof (articleList))
+                wqn_Append_Articles(articleList);
+
+            }
+        })
+    }
+
+    var startPageNum = 2;
+    var endPageNum = 0;
+    //鼠标滚动事件
+    $(function () {
+        $(window).scroll(function () {
+            {% comment %}console.log('scrollTop:', $(document).scrollTop());
+            console.log('windowHeight:', $(window).height());
+            console.log('Htmlheight:', $(document).height());
+            console.log($(document).scrollTop() + $(window).height(), '-->', $(document).height())
+            //下面这句主要是获取网页的总高度，主要是考虑兼容性所以把Ie支持的documentElement也写了，这个方法至少支持IE8
+            var htmlHeight = document.body.scrollHeight || document.documentElement.scrollHeight;
+            //clientHeight是网页在浏览器中的可视高度，
+            var clientHeight = document.body.clientHeight || document.documentElement.clientHeight;
+            //scrollTop是浏览器滚动条的top位置，
+            var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+            //通过判断滚动条的top位置与可视网页之和与整个网页的高度是否相等来决定是否加载内容；
+            console.log("滚动条到顶部的垂直高度：" + $(window).scrollTop());
+            console.log("浏览器滚动条的top位置：" + scrollTop);
+
+            console.log("页面的文档高度：" + $(document).height());
+            console.log("网页在浏览器中的可视高度：" + clientHeight);
+            console.log("网页的总高度：" + htmlHeight);
+
+            console.log("浏览器的高度：" + $(window).height());{% endcomment %}
+
+            if (($(document).scrollTop() + $(window).height()) > ($(document).height() - 100)) {
+                var wqn_params = {};
+                wqn_params["category"] = $("#wqn_CategoryNav").find(".active").attr('id');
+                wqn_params["searchInfo"] = $("#mySearchInfo").val();
+                wqn_params["startPageNum"] = startPageNum;
+                $.ajax({
+                    url: "/myBlog/searchArticle/",
+                    data: wqn_params,
+                    method: 'get',
+                    success: function (data) {
+                        var articleList = data.data.articleList;
+                        var pageNum = data.data.startPageNum;
+                        var page_total_num = data.data.page_total_num;
+
+                        
+                        wqn_Append_Articles(articleList);
+
+
+                        {#在最底层添加”没有更多了“#}
+                        if (pageNum >= page_total_num) {
+                            $("#myArticlesPart").append('<div class="alert alert-info" role="alert">'
+                                + '没有更多了!!!'
+                                + '</div>');
+                        } else {
+                            endPageNum = page_total_num;
+                            startPageNum = pageNum + 1;
+                        }
+
+
+                    }
+                })
+            }
+
+        })
+    });
+
+    {#搜索按钮#}
+    $(function () {
+        $("#mySearchButton").click(function () {
+
+            var searchInfo = $("#mySearchInfo").val();
+
+            console.log(searchInfo);
+            var myRequestData = {"searchInfo": searchInfo};
+
+            searchArticles(myRequestData);
+        })
+    })
 </script>
 </body>
 </html>

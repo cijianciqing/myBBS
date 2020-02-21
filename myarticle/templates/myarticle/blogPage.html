@@ -25,11 +25,17 @@
     <script src="{% static "bootstrap4.3.1/js/bootstrap.min.js" %}"></script>
     <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
     <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
-
+    <style>
+        body {
+            min-height: 75rem;
+            padding-top: 4.5rem;
+        }
+    </style>
 </head>
 <body>
+{% csrf_token %}
 {#上侧导航栏#}
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #a8e9fd;">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: #a8e9fd;">
     <a class="navbar-brand" href="{% url 'index' %}">
         <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
              class="d-inline-block align-top" alt="">
@@ -41,11 +47,18 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <div class=" mr-auto">
+        <div class=" mx-auto">
             <h1>{{ blogUser.username }}的博客</h1>
         </div>
 
         <ul class="navbar-nav ml-auto" id="myNavbar_right">
+            <li>
+                <form class="form-inline mt-2 mt-md-0" action="#">
+                    <input id="mySearchInfo" class="form-control mr-sm-2" type="text" placeholder="Search"
+                           aria-label="Search">
+                    <button id="mySearchButton" class="btn btn-outline-success my-2 my-sm-0">博客内搜索</button>
+                </form>
+            </li>
             {% if request.user.username %}
                 {% if request.user.username == blogUser.username %}
                     <li>
@@ -65,103 +78,271 @@
 
     </div>
 </nav>
-<!-- 主页面 开始-->
-{#<div class=".container-fluid" id="myMainContent">#}
 
 
-<div class="row">
+<div class="row mt-4">
+
     {#左侧栏#}
-
-
-    <div class="col-lx-2 col-2 ">
-
+    <div class="col-lx-3 col-3 ">
         <div class="card mt-2 ml-5 position-fixed ">
+            <div class="card-header ">
+                {{ blogUser.username }}的文章分类
+            </div>
             <div class="card-body">
-                <h5 class="card-title">文章分类</h5>
-                {% for category in category_list %}
-                    <p>{{ category.title }}({{ category.c }})</p>
-                {% endfor %}
+                <ul id="myCatelogs" class="list-group list-group-flush">
+                    {% for category in category_list %}
+                        <a href="javascript:void(0)" onclick="catalogToArticles({{ category.nid }})"
+                           class="list-group-item list-group-item-action"
+                           id="{{ category.nid }}">{{ category.title }}({{ category.c }})</a>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
-    <div class="col-lx-8 col-8">
+    {#中间文章栏#}
+    <div class="col-lx-6 col-6" id="myMainArticles">
+
         {% for article in userArticles %}
-            <div>
-                <div class="media " id="myArticleShortcut">
-                    <img class="media-object author-img" src="{{ article.user.avatar.url }}" alt="...">
-                    <div class="media-body">
-                        <h4>
-                            <a href="{% url 'myblog:articleDetail'  article.nid %}">{{ article.title }}</a>
-                        </h4>
-                        {{ article.desc | safe }}
-                    </div>
+
+            <div class="card mt-2 w-75 border-primary">
+                <h5 class="card-header">{{ article.title }}</h5>
+                <div class="card-body">
+                    <p class="card-text">{{ article.desc | safe }}</p>
+                    <a href="{% url 'myblog:articleDetail'  article.nid %}" class="btn btn-primary">View Details</a>
                 </div>
-
-                <div class="article-footer">
-                        <span><a
-                                href="{% url 'myblog:user' article.user.username %}">{{ article.user.username }}</a></span>发布于
-                    <span>{{ article.create_time|date:'Y-m-d H:i:s' }}</span>
-                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>点赞({{ article.up_count }})
-                    <i class="fa fa-comment"></i>评论({{ article.comment_count }})
-
-
+                <div class="card-footer text-muted">
+                    <span><a href="{% url 'myblog:user' article.user.username %}">{{ article.user.username }}</a></span>
+                    发布于<span>{{ article.create_time|date:'Y-m-d H:i:s' }}</span>
+                    <i class="fa fa-thumbs-up ml-2" aria-hidden="true"></i>点赞({{ article.up_count }})
+                    <i class="fa fa-comment ml-2"></i>评论({{ article.comment_count }})
                 </div>
             </div>
         {% endfor %}
     </div>
-    <div class="col-lx-2 col-2">
+    {#右侧栏#}
+    <div class="col-lx-3 col-3">
         <div class="card  position-fixed mt-2">
             <div class="card-header">
                 {{ blogUser.username }}的标签
             </div>
             <div id="AllTags" class="card-body">
                 {% for mytag in tag_list %}
-                    <a href="{% url 'myblog:tagToArticles' mytag.nid %}" class="btn mt-1">{{ mytag.title }}</a>
+                    <a href="javascript:void(0)" onclick="tagToArticles({{ mytag.nid }})" id="{{ mytag.nid }}"
+                       class="btn  mt-1">{{ mytag.title }}</a>
                 {% endfor %}
             </div>
-            <div class="card-footer">
-                <a href="#" class="btn btn-primary ">添加标签</a>
-            </div>
+            {% if request.user.username and request.user.username == blogUser.username %}
+                <div class="card-footer">
+{#                    <a href="#" class="btn btn-primary ">添加标签</a>#}
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                        添加标签
+                    </button>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">添加标签</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+            <label for="recipient-name" class="col-form-label">标签名称:</label>
+            <input type="text" class="form-control" id="tag-name">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id='myAddTag' type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
 {#</div>#}
 <!-- 主页面 结束-->
 <script type="text/javascript">
+    
+    $(function () {
+        $("#myAddTag").click(function () {
+            var tagName = $("#tag-name").val();
+            $.ajax({
+                url:'/myBlog/addTag/',
+                data:{"tag": tagName,
+                "csrfmiddlewaretoken": $("[name = 'csrfmiddlewaretoken']").val()},
+                method: 'post',
+                success: function (data) {
+                    var tag = data.tag;
+                    $("#AllTags").append('<a href="javascript:void(0)" onclick="tagToArticles('+tag.nid+')" id="'+tag.nid+'"\
+                       class="btn btn-info  mt-1">'+tag.title+'</a>');
+                    $("#exampleModal").modal('hide');
+                }
+            })
+        })
+    });
+
+    {#    博客站点内搜索#}
+    $(function () {
+        $("#mySearchButton").click(function () {
+
+            var searchInfo = $("#mySearchInfo").val();
+
+            console.log(searchInfo);
+            $.ajax({
+                url: "/myBlog/searchArticle/",
+                data: {
+                    "searchInfo": searchInfo,
+                    "username": '{{ blogUser.username }}'
+                },
+                method: 'get',
+                success: function (data) {
+                    $("#myMainArticles div").remove();
+                    var categoryToArticles = data.data.articleList;
+                    console.log(typeof (categoryToArticles));
+                    for (var i = 0; i < categoryToArticles.length; i++) {
+                        var myCard = '<div class="card mt-2 w-75 border-primary">'
+                            + '<h5 class="card-header">' + categoryToArticles[i].title + '</h5>'
+                            + '<div class="card-body">'
+                            + '<p class="card-text">' + categoryToArticles[i].desc + '</p>'
+                            + '<a href="/myBlog/article/' + categoryToArticles[i].pk + '" class="btn btn-primary">View Details</a>'
+                            + '</div>'
+                            + '<div class="card-footer text-muted">'
+                            + '发布于<span>' + categoryToArticles[i].create_time_new + '</span>'
+                            + '<i class="fa fa-thumbs-up ml-2" aria-hidden="true"></i>点赞(' + categoryToArticles[i].up_count + ')'
+                            + '<i class="fa fa-comment ml-2"></i>评论(' + categoryToArticles[i].comment_count + ')'
+                            + '</div>'
+                            + '</div>'
+                        console.log(myCard)
+                        $("#myMainArticles").append(myCard);
+                    }
+
+                }
+            })
+        })
+    })
+
+    {#   获取特定分类的文章#}
+
+    function catalogToArticles(categoryID) {
+        console.log("#" + categoryID);
+        $("#myCatelogs").find("a").removeClass("active");
+        $("#AllTags").find("a").removeClass("disabled");
+        $("#myCatelogs").find("#" + categoryID).addClass("active");
+        $.ajax({
+            url: "{% url 'myblog:categoryToArticles'  blogUser.username %}",
+            type: "get",
+            data: {"categoryID": categoryID},
+            success: function (data) {
+                console.log(data);
+                $("#myMainArticles div").remove();
+                var categoryToArticles = JSON.parse(data.categoryToArticles)
+                for (var i = 0; i < categoryToArticles.length; i++) {
+                    console.log(typeof (categoryToArticles[i].fields.create_time))
+                    var myCard = '<div class="card mt-2 w-75 border-primary">'
+                        + '<h5 class="card-header">' + categoryToArticles[i].fields.title + '</h5>'
+                        + '<div class="card-body">'
+                        + '<p class="card-text">' + categoryToArticles[i].fields.desc + '</p>'
+                        + '<a href="/myBlog/article/' + categoryToArticles[i].pk + '" class="btn btn-primary">View Details</a>'
+                        + '</div>'
+                        + '<div class="card-footer text-muted">'
+                        {#   从时间的字符串中获取指定长度的字符串#}
+                        + '发布于<span>' + categoryToArticles[i].fields.create_time.substring(0, 10) + '</span>'
+                        + '<i class="fa fa-thumbs-up ml-2" aria-hidden="true"></i>点赞(' + categoryToArticles[i].fields.up_count + ')'
+                        + '<i class="fa fa-comment ml-2"></i>评论(' + categoryToArticles[i].fields.comment_count + ')'
+                        + '</div>'
+                        + '</div>'
+                    console.log(myCard)
+                    $("#myMainArticles").append(myCard);
+
+                }
+
+            }
+        })
+
+    }
+
+    {#获取特定标签的文章#}
+
+    function tagToArticles(tagID) {
+        console.log("#" + tagID);
+        $("#myCatelogs").find("a").removeClass("active");
+        $("#AllTags").find("a").removeClass("disabled");
+        $("#AllTags").find("#" + tagID).addClass("disabled");
+        $.ajax({
+            url: "/myBlog/tagToArticles/" + tagID,
+            type: "get",
+            success: function (data) {
+                console.log(data);
+                $("#myMainArticles div").remove();
+                console.log(typeof (data.tagArticles));
+                var tagArticles = JSON.parse(data.tagArticles)
+                for (var i = 0; i < tagArticles.length; i++) {
+                    console.log(typeof (tagArticles[i].fields.create_time))
+                    var myCard = '<div class="card mt-2 w-75 border-primary">'
+                        + '<h5 class="card-header">' + tagArticles[i].fields.title + '</h5>'
+                        + '<div class="card-body">'
+                        + '<p class="card-text">' + tagArticles[i].fields.desc + '</p>'
+                        + '<a href="/myBlog/article/' + tagArticles[i].pk + '" class="btn btn-primary">View Details</a>'
+                        + '</div>'
+                        + '<div class="card-footer text-muted">'
+                        {#   从时间的字符串中获取指定长度的字符串#}
+                        + '发布于<span>' + tagArticles[i].fields.create_time.substring(0, 10) + '</span>'
+                        + '<i class="fa fa-thumbs-up ml-2" aria-hidden="true"></i>点赞(' + tagArticles[i].fields.up_count + ')'
+                        + '<i class="fa fa-comment ml-2"></i>评论(' + tagArticles[i].fields.comment_count + ')'
+                        + '</div>'
+                        + '</div>'
+                    console.log(myCard)
+                    $("#myMainArticles").append(myCard);
+
+                }
+
+            }
+        })
+
+    }
+
+    {#    标签显示样式#}
     $(document).ready(function () {
         var tags_a = $("#AllTags a");
         tags_a.each(function () {
             var x = 9;
             var y = 0;
-            var rand = parseInt(Math.random() * (x - y ) + y);
-            var buttonCss =''
+            var rand = parseInt(Math.random() * (x - y) + y);
+            var buttonCss = ''
             switch (rand) {
                 case 1:
-                    buttonCss='btn-dark';
+                    buttonCss = 'btn-dark';
                     break;
                 case 2:
-                    buttonCss='btn-success';
+                    buttonCss = 'btn-success';
                     break;
                 case 3:
-                    buttonCss='btn-danger';
+                    buttonCss = 'btn-danger';
                     break;
                 case 4:
-                    buttonCss='btn-success';
+                    buttonCss = 'btn-success';
                     break;
                 case 5:
-                    buttonCss='btn-warning';
+                    buttonCss = 'btn-warning';
                     break;
                 case 6:
-                    buttonCss='btn-light';
+                    buttonCss = 'btn-light';
                     break;
                 default:
-                    buttonCss='btn-info';
+                    buttonCss = 'btn-info';
 
             }
             $(this).addClass(buttonCss);
         });
     })
+
+
 </script>
 
 </body>

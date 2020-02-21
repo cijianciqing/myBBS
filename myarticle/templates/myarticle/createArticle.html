@@ -65,12 +65,12 @@
     </div>
 </nav>
 <!-- 主页面 开始-->
-<div class=".container-fluid" id="myMainContent">
+<div class="container-fluid mt-3" id="myMainContent">
 
     <div class="row">
         {#        <div class="col-8 offset-2 d-flex justify-content-center">#}
         <div class="col-8 offset-2">
-            <form method="post" action="#">
+            <form method="post" action="#" novalidate>
                 {% csrf_token %}
                 <input type="hidden" id="myIsUpdate" value= {{ form_obj.is_update }}>
                 <div class="form-group row">
@@ -78,29 +78,53 @@
                            for="{{ form_obj.title.id_for_label }}">{{ form_obj.title.label }}</label>
                     <div class="col-10">
                         {{ form_obj.title }}
+                        <div class="invalid-feedback">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <label class="col-2 col-form-label d-flex justify-content-center"
+                           for="{{ form_obj.desc.id_for_label }}">{{ form_obj.desc.label }}</label>
+                    <div class="col-10">
+                        {{ form_obj.desc }}
+                        <div class="invalid-feedback">
+                        </div>
                     </div>
                 </div>
+
                 <div class="form-group row">
                     <label class="col-2 col-form-label d-flex justify-content-center"
                            for="{{ form_obj.category.id_for_label }}">{{ form_obj.category.label }}</label>
                     <div class="col-10 ">
                         {{ form_obj.category }}
+                        <div class="invalid-feedback">
+                        </div>
                     </div>
                 </div>
+
                 <div class="form-group row">
                     <label class="col-2 col-form-label d-flex justify-content-center"
                            for="{{ form_obj.tags.id_for_label }}">{{ form_obj.tags.label }}</label>
                     <div class="col-10">
                         {{ form_obj.tags }}
+                        <div class="invalid-feedback">
+                        </div>
+
                     </div>
                 </div>
+{#具体文章内容#}
                 <div class="form-group row">
                     <label class="col-2 col-form-label d-flex justify-content-center"
                            for="{{ form_obj.content.id_for_label }}">{{ form_obj.content.label }}</label>
                     <div class="col-10">
                         {{ form_obj.content }}
+                        <div class="invalid-feedback">
+                        </div>
                     </div>
                 </div>
+
+                {#                <input type="submit" value="tijiao">#}
             </form>
         </div>
         <div class="col-2">
@@ -111,60 +135,47 @@
 
 <!-- 主页面 结束-->
 <script type="application/javascript">
-    {% if  currentArticleID %}
-        var myCrID = {{ currentArticleID }}
-    {% endif %}
 
 
     // AJAX提交注册的数据
     $("#mySubmitArticle").click(function () {
-
         // 取到用户填写的注册数据，向后端发送AJAX请求
-        {#var formData = new FormData();#}
-        {#formData.append("username", $("#id_username").val());#}
-        {#formData.append("password", $("#id_password").val());#}
-        {#formData.append("re_password", $("#id_re_password").val());#}
-        {#formData.append("email", $("#id_email").val());#}
-        {#formData.append("avatar", $("#id_avatar")[0].files[0]);#}
-        {#formData.append("csrfmiddlewaretoken", $("[name='csrfmiddlewaretoken']").val());#}
-        var myTags = []
-        $("#id_tags option:selected").each(function () {
-            myTags.push($(this).val())
-        })
-        var myUrl = ''
 
-        if ($("#myIsUpdate").val()) {
+        var myUrl = '';
+        {#判断是创建文档还是编辑文档#}
+        var isUpdate = $("#myIsUpdate").val();
+        if (isUpdate == "True") {
             myUrl = "{% url 'myblog:editArticle' currentArticleID %}"
         } else {
-            myUrl = "{% url 'myblog:createArticle' %}"
+            myUrl = "/myBlog/createArticle/"
         }
-        console.log(myUrl)
+
+        console.log(myUrl);
+        var formData = new FormData();
+        formData.append("title", $("#id_title").val());
+        formData.append("category", $("#id_category").val());
+        $("#id_tags option:selected").each(function () {
+            formData.append("tags", $(this).val());
+        });
+        formData.append("desc", $("#id_desc").val());
+        formData.append("content", CKEDITOR.instances.id_content.getData());
+        formData.append("csrfmiddlewaretoken", $("[name='csrfmiddlewaretoken']").val());
         $.ajax({
             url: myUrl,
             type: "post",
             {#告诉jquery不处理数据#}
-            {#processData: false,#}
+            processData: false,
             {#告诉jquery不设置contentType#}
-            {#contentType: false,#}
-            data: {
-                "title": $("#id_title").val(),
-                "category": $("#id_category").val(),
-                "tags": JSON.stringify(myTags),
-                "content": CKEDITOR.instances.id_content.getData(),
-                "csrfmiddlewaretoken": $("[name = 'csrfmiddlewaretoken']").val()  // 使用jQuery取出csrfmiddlewaretoken的值，拼接到data中
-            },
+            contentType: false,
+            data: formData,
             success: function (data) {
                 if (data.result_code == -100) {
                     // 有错误就展示错误
                     // console.log(data.msg);
                     // 将报错信息填写到页面上
                     $.each(data.data, function (k, v) {
-                        // console.log("id_"+k, v[0]);
-                        // console.log($("#id_"+k));
-                        {#$("#id_" + k).next("span").text(v[0]).parent().parent().addClass("is-invalid");#}
-                        {#console.log($("#id_" + k).next("div").text());#}
+
                         $("#id_" + k).addClass("is-invalid").next("div").text(v[0]);
-                        {#$("#id_" + k).next(".invalid-feedback").text(v[0]);#}
                     })
 
                 } else {
@@ -177,6 +188,3 @@
 </script>
 </body>
 </html>
-
-
-

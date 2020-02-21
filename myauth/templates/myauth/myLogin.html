@@ -1,46 +1,63 @@
-{#---#}
-{#layout: examples#}
-{#title: Signin Template#}
-{#extra_css: "signin.css"#}
-{#body_class: "text-center"#}
-{#include_js: false#}
-{#---#}
-{% extends 'BootstrapTemplate.html' %}
-
-{% block MyBootstrapCss %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
     {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>Bootstrap 101 Template</title>
+
+    <link href="{% static "bootstrap4.3.1/dashboard.css" %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'bootstrap4.3.1/css/bootstrap.min.css ' %}">
+    <link rel="stylesheet" href="{% static "bootstraptable1.15.5/bootstrap-table.min.css" %}">
+    <link rel="stylesheet" href="{% static 'Font-Awesome-5.6.3/css/all.css ' %}">
+    <link rel="stylesheet" href="{% static 'sweetalert/sweetalert.css ' %}">
+    {#    <!-- Custom styles for this template -->#}
+    {% block MyBootstrapCss %}{% endblock %}
+    {##}
+    {#    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->#}
+    <script src="{% static "jquery/jquery-3.4.1.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "popper.js-1.16.0/umd/popper.min.js" %}"></script>
+    {#    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->#}
+    <script src="{% static "bootstrap4.3.1/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
+    <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
     <link rel="stylesheet" href="{% static 'myauth/css/signin.css' %}">
     <style>
         body {
             text-align: center
         }
     </style>
-{% endblock %}
-{% block MyBootstrapBody %}
-    <form class="form-signin" action="{% url 'myauth:login' %}" method="post" novalidate>
-        {% csrf_token %}
-        <img class="mb-4" src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" alt="" width="72"
-             height="72">
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+</head>
 
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" id="inputEmail" name="inputEmail" class="form-control" placeholder="Email address" required
-               autofocus>
 
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Password"
-               required>
+<body>
+<form class="form-signin" action="{% url 'myauth:login' %}" method="post" novalidate>
+    {% csrf_token %}
+    <img class="mb-4" src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" alt="" width="72"
+         height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
-        <div class="alert alert-danger {% if loginError %}{% else %}d-none{% endif %}" role="alert" >
-            账号或密码错误!
-        </div>
+    <label for="inputEmail" class="sr-only">Email address</label>
+    <input type="email" id="inputEmail" name="inputEmail" class="form-control" placeholder="Email address" required
+           autofocus>
 
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        {#        <p class="mt-5 mb-3 text-muted">&copy; 2017-{{ site.time | date: "%Y" }}</p>#}
-    </form>
-{% endblock %}
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Password"
+           required>
+
+    <div class="alert alert-danger {% if loginError %}{% else %}d-none{% endif %}" role="alert">
+        账号或密码错误!
+    </div>
+
+    <div class="checkbox mb-3">
+        <label>
+            <input type="checkbox" value="remember-me"> Remember me
+        </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    {#        <p class="mt-5 mb-3 text-muted">&copy; 2017-{{ site.time | date: "%Y" }}</p>#}
+</form>
+</body>
+</html>

@@ -35,17 +35,21 @@ urlpatterns = [
     # 打开特定文章
     # re_path(r'^article/(?P<username>[a-zA-Z0-9_]{4,19})?/article/(?P<articleID>\d+)/$',views.articleDetail,name='articleDetail'),
     re_path(r'^article/(?P<articleID>\d+)/$', views.articleDetail, name='articleDetail'),
+    # 文章的查询
+    path('searchArticle/', views.searchArticle, name='searchArticle'),
 
     ##################
     #标签操作，增删改查
     ##################
     #获取标签对应的文章
     re_path(r'^tagToArticles/(?P<tagID>\d+)/$',views.tagToArticle, name='tagToArticles'),
-
+    path('addTag/',views.addTag,name='addTag'),
     ##################
     #分类操作，增删改查
     ##################
     #获取分类对应的文章
+    # re_path(r'^categoryToArticles/(?P<categoryID>\d+)/(?P<username>[a-zA-Z0-9_]{3,19})/$',views.categoryToArticles, name='categoryToArticles'),
+    re_path(r'^categoryToArticles/(?P<username>[a-zA-Z0-9_]{3,19})/', views.categoryToArticles,name='categoryToArticles'),
 
     # 点赞
     path('thumbup/',views.thumbUp,name='thumbUp'),

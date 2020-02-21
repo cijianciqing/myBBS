@@ -26,10 +26,18 @@
     <script src="{% static "bootstraptable1.15.5/bootstrap-table.min.js" %}"></script>
     <script src="{% static "sweetalert/sweetalert.min.js" %}"></script>
 
+    {#    ckeitor相关的media#}
+    {{ myCommentForm.media }}
+    <style>
+        body {
+            min-height: 75rem;
+            padding-top: 4.5rem;
+        }
+    </style>
 </head>
 <body>
 {#上侧导航栏#}
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #a8e9fd;">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: #a8e9fd;">
 
     <a class="navbar-brand" href="{% url 'index' %}">
         <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
@@ -94,13 +102,37 @@
                     <h1>{{ userArticle.title }}</h1>
                     <h1 id="myArticleID" hidden>{{ userArticle.pk }}</h1>
                 </div>
+
                 <div class="d-flex justify-content-around mt-2">
-                    <div>创建人:{{ userArticle.user.username }}</div>
+                    <div>创建人:<a
+                            href="{% url 'myblog:user' userArticle.user.username %}">{{ userArticle.user.username }}</a>
+                    </div>
                     <div>创建时间:{{ userArticle.create_time|date:'Y-m-d H:i:s' }}</div>
                     <div id="MythumbCount">点赞数:{{ userArticle.up_count }}</div>
                 </div>
                 <div class="dropdown-divider"></div>
-                {#        <div id="MythumbCount" class="d-flex justify-content-end">点赞数{{ userArticle.up_count }}</div>#}
+                <div class="d-flex justify-content-around">
+                    <nav aria-label="breadcrumb" class="d-flex justify-content-around">
+                        <h4>所属分类:</h4>
+                        <ol class="breadcrumb">
+                            {#                            <li class="breadcrumb-item"><a href="#">所属分类</a></li>#}
+                            <li class="breadcrumb-item active" aria-current="page">{{ userArticle.category.title }}</li>
+                        </ol>
+                    </nav>
+                    <div>
+                        <h4>
+                            标签：
+                            {% for tag in userArticle.tags.values %}
+                                <span class="badge badge-primary">{{ tag.title }}</span>
+                            {% endfor %}
+                        </h4>
+                    </div>
+                </div>
+                {#                <div class="dropdown-divider"></div>#}
+                <div class="alert alert-info text-center" role="alert">
+                    {{ userArticle.desc }}
+                </div>
+                <div class="dropdown-divider"></div>
                 <div class="myArticleContent rounded-lg"><p>{{ userArticle.content|safe }}</p></div>
 
                 <div class="dropdown-divider"></div>
@@ -115,65 +147,117 @@
                         <i class="fa fa-thumbs-o-up" aria-hidden="true">点赞</i>
                     {% endif %}
                 </div>
-                <p>文章历史评论</p>
-                <div class="myCommentTree">
-                </div>
 
-                <div class="div_comment">
-                    <p>昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
-                                 value="{{ request.user.username }}"></p>
-                    <p>评论内容</p>
-                    <textarea name="" id="comment_content" cols="60" rows="10"></textarea>
-                    <p>
-                        <button id="comment_btn">提交评论</button>
-                    </p>
+                <div class="dropdown-divider"></div>
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
+                        aria-expanded="false" aria-controls="collapseExample">
+                    文章历史评论
+                </button>
+                {% comment %}<button class="btn btn-primary" type="button" id="wqn_collapse">
+                    文章历史评论01
+                </button>{% endcomment %}
+                {#                <h5>文章历史评论</h5>#}
+
+                <div class="row collapse" id="collapseExample">
+                    <div class="myCommentTree col-8">
+                    </div>
+                    <div class="commentOther col-4">
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+
+                <div class="div_comment " id="myCommentPart">
+
+                    <div class="row">
+
+                        <p>昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="20"
+                                     value="{{ request.user.username }}"></p>
+                        <button class="ml-2" id="comment_btn" style="height: 80%">提交评论</button>
+                    </div>
+                    {{ myCommentForm.content }}
 
                 </div>
-                {% comment %} {% else %}
-        <a href="{% url 'myauth:login' %}">登录评论</a>{% endcomment %}
             {% endif %}
         </div>
+        {#页面右侧工具栏#}
         <div class="col-lx-2 col-2">
-            {#            <h3>右侧边栏暂时为空</h3>#}
         </div>
     </div>
 </div>
-</div>
+<a class="btn btn-default" href="#myCommentPart" role="button" style="position:fixed;right:0;top:10%">
+    去底部
+</a>
+<a class="btn btn-default" href="#" role="button" style="position:fixed;right:0;bottom:0">
+    回到顶部
+</a>
 <!-- 主页面 结束-->
 <script type="application/javascript">
 
-    // 获取评论数据，展示评论树结构
-    $.ajax({
-        url: "{% url 'myblog:getCommentTreeData' userArticle.pk%}",
-        success: function (data) {
-            {#console.log(data);#}
+    {% comment %}$(function () {
+        $("#wqn_collapse").click(function () {
+           var collapseResult = $("#collapseExample").collapse('toggle');
+           console.log("collapseResult:",collapseResult)
+        })
+    }){% endcomment %}
+    {#    当打开历史评论时，加载历史评论#}
+    $('#collapseExample').on('show.bs.collapse', function () {
+        // 获取评论数据，展示评论树结构
+        $.ajax({
+            url: "{% url 'myblog:getCommentTreeData' userArticle.pk%}",
+            success: function (data) {
+                console.log(data);
 
-            $.each(data, function (index, comment_dict) {
-                var s = '<div class="comment_item" comment_id=' + comment_dict.pk + '><div class="myCommentTitle"><span style="color: gray">' + comment_dict.create_time_new + '</span> &nbsp;&nbsp;<a id="commentUserName" href="#"><span>' + comment_dict.user__username + '</span></a> <a href="#" class="ml-5 reply_btn text-decoration-none"><span>回复</span></a> </div> <div class="myCommentContent"><span>' + comment_dict.content + '</span></div></div>'
-                if (comment_dict.parent_comment_id) {
-                    // 子评论
-                    ppid = comment_dict.parent_comment_id;
-                    $("[comment_id=" + ppid + "]").append(s);
-                } else {   //  根评论
-                    $(".myCommentTree").append(s);
-                }
-            })
+                $.each(data, function (index, comment_dict) {
+                    var s = ' <div class="dropdown-divider"></div>'
+                        + '<div class="media mt-3" comment_id=' + comment_dict.pk + '>'
+                        + '<img class="mr-3" src="' + comment_dict.avatarURL + '"alt="..." width="20" height="20">'
+                        + '<div class="media-body ">'
+                        + '<div class="d-flex justify-content-between">'
+                        + '<span style="color: gray">' + comment_dict.create_time_new + '</span> &nbsp;&nbsp;'
+                        + '<a id="commentUserName" href="#"><span>' + comment_dict.user__username + '</span></a>'
+                        + '<a href="javascript:void(0)" class="reply_btn text-decoration-none"><span>回复</span></a>'
+                        + '</div>'
+                        + comment_dict.content
+                        + ' </div></div> ';
+
+                    if (comment_dict.parent_comment_id) {
+                        // 子评论
+                        ppid = comment_dict.parent_comment_id;
+                        $("[comment_id=" + ppid + "]").find(".media-body").first().append(s);
+                    } else {   //  根评论
+                        $(".myCommentTree").append(s);
+                    }
+                })
 
 
-        }
-    });
+            }
+        });
+    })
+
 
     // 提交评论
     var pid = "";
     $("#comment_btn").click(function () {
-
+        console.log(pid)
         var article_id = $("#myArticleID").text();
-        var content = $("#comment_content").val();
+        var content = CKEDITOR.instances.id_content.getData();
         {#如果是子评论，对评论内容进行截取#}
         if (pid) {
-            var index = content.indexOf("\n");
-            content = content.slice(index + 1)
+            var index = content.indexOf("</p>");
+            content = content.slice(index + 5);
+
         }
+        console.log(content);
+        {% comment %}  var formData = new FormData();
+         formData.append("title", $("#id_title").val());
+         formData.append("category", $("#id_category").val());
+         $("#id_tags option:selected").each(function () {
+             formData.append("tags", $(this).val());
+         });
+         formData.append("desc", $("#id_desc").val());
+         formData.append("content", CKEDITOR.instances.id_content.getData());
+         formData.append("csrfmiddlewaretoken", $("[name='csrfmiddlewaretoken']").val());{% endcomment %}
+
         $.ajax({
             url: "{% url 'myblog:postComment' %}",
             type: "post",
@@ -195,9 +279,10 @@
                 {#$(".comment_list").append(comment_li);#}
 
                 // 清空文本框
-                $("#comment_content").val('');
+                {#$("#comment_content").val('');#}
+                CKEDITOR.instances.id_content.setData('');
                 // 清空pid
-                pid = ""
+                pid = "";
             }
         })
 
@@ -206,12 +291,44 @@
 
     // 回复按钮事件
     $(document).on("click", ".reply_btn", function () {
-        $("#comment_content").focus();
-        var v = "@" + $("#commentUserName").text() + "\n";
-        $("#comment_content").val(v);
-        //pid赋值
-        pid = $(this).parent().parent().attr("comment_id")
-    })
+        var abc = $("#asdfasdfasdfasdf");
+        console.log(abc);
+        {#鼠标自动聚焦到评论页面#}
+        var editor = CKEDITOR.instances.id_content;
+
+        var v = "@" + $("#commentUserName").text();
+        editor.setData('<p>' + v + ':</p><br/>', {
+            callback: function () {
+                {#var focusManager = new CKEDITOR.focusManager(editor);#}
+                {#focusManager.focus();#}
+                this.focus(); // true
+                var range = editor.createRange();
+                range.moveToElementEditEnd(this.editable());
+            }
+        });
+        {#//pid赋值#}
+        pid = $(this).parent().parent().parent().attr("comment_id");
+        console.log(pid);
+        {##}
+        {#var focusManager = new CKEDITOR.focusManager(editor);#}
+        {#focusManager.focus();#}
+
+        {#editor.focus();#}
+        {#var range = editor.createRange();#}
+        {#range.moveToElementEditEnd(editor.editable());#}
+
+        {# var v = "@" + $("#commentUserName").text();#}
+        {#editor.setData( '<p>'+v+'</p><br/>' );#}
+
+        {#$("#cke_id_content").focus();#}
+        {#var v = "@" + $("#commentUserName").text() + "\n";#}
+        {##}
+        {# $("#id_content").focus();#}
+        {#var v = "@" + $("#commentUserName").text() + "\n";#}
+        {#$("#id_content").val(v);#}
+        {#//pid赋值#}
+        {#pid = $(this).parent().parent().attr("comment_id")#}
+    });
 
 
     // 点赞或踩灭

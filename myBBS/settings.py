@@ -239,7 +239,7 @@ LOGGING = {
     'loggers': {# logging管理器
         'django': {
             # 'handlers': ['console_handler', 'file_handler', 'error_handler'],
-            'handlers': ['console_handler', 'file_handler'],
+            'handlers': ['console_handler',],
             'filters': ['test'],
             'level': 'DEBUG'
         },
@@ -302,6 +302,23 @@ CUSTOM_TOOLBAR = [
     },
 ]
 
+CUSTOM_TOOLBAR02 = [
+    {
+        "name": "document",
+        "items": [
+            "Bold", "Italic", "Underline", "Strike", "-",
+            "TextColor", "BGColor",  "-",
+        ],
+    },
+    {
+        "name": "widgets",
+        "items": [
+            "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock","-",
+            "CodeSnippet",  "Smiley",  "-",
+        ],
+    },
+]
+
 
 # ckeditor配置
 
@@ -317,10 +334,12 @@ CKEDITOR_CONFIGS = {
         "codeSnippet_theme": "school_book",
     },
     "my-custom-toolbar": {
-        'width': '100%',  # 宽度
+        # 'width': '100%',  # 宽度
+        'width': 300,
+        'height': 200,
         'uiColor' : '#E0F2F4',
         "skin": "moono-lisa",
-        "toolbar": CUSTOM_TOOLBAR,
+        "toolbar": CUSTOM_TOOLBAR02,
         "toolbarGroups": None,
         # "extraPlugins": ",".join(["image2", "codesnippet"]),
         # "removePlugins": ",".join(["image"]),

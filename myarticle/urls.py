@@ -42,7 +42,7 @@ urlpatterns = [
     #标签操作，增删改查
     ##################
     #获取标签对应的文章
-    re_path(r'^tagToArticles/(?P<tagID>\d+)/$',views.tagToArticle, name='tagToArticles'),
+    re_path(r'^tagToArticles/(?P<username>[a-zA-Z0-9_]{3,19})/(?P<tagID>\d+)/$',views.tagToArticle, name='tagToArticles'),
     path('addTag/',views.addTag,name='addTag'),
     ##################
     #分类操作，增删改查

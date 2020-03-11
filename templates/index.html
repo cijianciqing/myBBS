@@ -29,11 +29,19 @@
             min-height: 75rem;
             padding-top: 4.5rem;
         }
+
+        {% comment %}   #wqn_top_nav {
+               position: fixed; top:0; buttom :80%; width: ;
+           }
+            #myMainContent {
+               position: fixed; top:0; buttom :0;
+                overflow: scroll;
+           }{% endcomment %}
     </style>
 </head>
 <body>
 {#顶层导航#}
-<div class="fixed-top">
+<div id="wqn_top_nav" class="fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
             <img src="{% static 'bootstrap4.3.1/assets/brand/bootstrap-solid.svg' %}" width="30" height="30"
@@ -100,30 +108,28 @@
     </ul>
 </div>
 <!-- 主页面 开始-->
-<div class="container-fluid mt-5" id="myMainContent">
+<div class="container-fluid mt-5 " id="myMainContent">
 
     <div class="row">
         <div class="col-3">
-            <div class="card  ">
-                <div class="card-body">
-                    <div class="panel-heading">左侧广告位一</div>
-                    <h5 class="card-title">Card title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of
-                        thesdsdssdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasd
-                        card's content.</p>
+            <div style="position: fixed;width: 22%;">
+                <div class="card bg-info" id="wqn_left_nav">
+                    <div class="card-body">
+                        <div class="panel-heading">左侧广告位一</div>
+                        <h5 class="card-title">Card title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                        <p class="card-text">Some quick example01.</p>
+                    </div>
                 </div>
-            </div>
-            <br/>
-            <div class="card ">
-                <div class="card-body">
-                    <div class="panel-heading">左侧广告位二</div>
-                    <h5 class="card-title">Card title</h5>
-                    {#                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
-                    <h8> Some quick example text to build on the card title and make up the bulk of
-                        the
-                        card's content.
-                    </h8>
+                <br/>
+                <div class="card bg-warning">
+                    <div class="card-body">
+                        <div class="panel-heading">左侧广告位二</div>
+                        <h5 class="card-title">Card title</h5>
+                        {#                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                        <h8> Some quick example02
+                        </h8>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,25 +155,27 @@
             {% endfor %}
         </div>
         <div class="col-3">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <div class="panel-heading">右侧广告位一</div>
-                    <h5 class="card-title">Card title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of
-                        the
-                        card's content.</p>
+            <div style="position: fixed;width: 22%;">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="panel-heading">右侧广告位一</div>
+                        <h5 class="card-title">Card title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                            the
+                            card's content.</p>
+                    </div>
                 </div>
-            </div>
-            <br/>
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="panel-heading">右侧广告位二</div>
-                    <h5 class="card-title">Card title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of
-                        the
-                        card's content.</p>
+                <br/>
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="panel-heading">右侧广告位二</div>
+                        <h5 class="card-title">Card title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                            the
+                            card's content.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,7 +210,8 @@
 
     {#    清空原有页面内容，然后将结果附加到页面中#}
 
-    function searchArticles(wqn_params) {
+    {% comment %}function searchArticles(wqn_params) {
+
         $.ajax({
             url: "/myBlog/searchArticle/",
             data: wqn_params,
@@ -211,31 +220,134 @@
 
                 $("#myArticlesPart div").remove();
                 var articleList = data.data.articleList;
-                console.log(typeof (articleList));
+                var articleList = data.data.articleList;
+                var pageNum = parseInt(data.data.startPageNum);
                 wqn_Append_Articles(articleList);
 
             }
         })
-    }
+    }{% endcomment %}
 
     {#直接将结果附加到现有页面,用于流加载#}
 
-    function searchArticles02(wqn_params) {
-        $.ajax({
-            url: "/myBlog/searchArticle/",
-            data: wqn_params,
-            method: 'get',
-            success: function (data) {
-                var articleList = data.data.articleList;
-                console.log(typeof (articleList))
-                wqn_Append_Articles(articleList);
+    {% comment %}    function searchArticles02(wqn_params) {
+            $.ajax({
+                url: "/myBlog/searchArticle/",
+                data: wqn_params,
+                method: 'get',
+                success: function (data) {
+                    var articleList = data.data.articleList;
+                    console.log(typeof (articleList))
+                    wqn_Append_Articles(articleList);
 
+                }
+            })
+        }{% endcomment %}
+
+    {#定义用于搜索的全局变量#}
+    var startPageNum = 0;
+    var endPageNum = 1;
+
+    var wqn_search_params = {};
+    wqn_search_params["category"] = $("#wqn_CategoryNav").find(".active").attr('id');
+    wqn_search_params["searchInfo"] = $("#mySearchInfo").val();
+    wqn_search_params["startPageNum"] = startPageNum;
+
+    {#搜索按钮,更换分类按钮#}
+    $(function () {
+        {#当搜索内容修改，则更改搜索参数#}
+        $("#mySearchInfo").change(function () {
+            wqn_search_params["searchInfo"] = $("#mySearchInfo").val();
+        });
+        $("#mySearchButton").click(function () {
+            {#还原#}
+            startPageNum = 1;
+            wqn_search_params["startPageNum"] = startPageNum;
+            endPageNum = 1;
+            $.ajax({
+
+                url: "/myBlog/searchArticle/",
+                data: wqn_search_params,
+                method: 'get',
+                success: function (data) {
+                    var articleList = data.data.articleList;
+                    var pageNum = parseInt(data.data.startPageNum);
+                    {#console.log(typeof (pageNum));#}
+                    var page_total_num = parseInt(data.data.page_total_num);
+
+                    if (pageNum == 1) {
+                        $("#myArticlesPart div").remove();
+                    }
+                    wqn_Append_Articles(articleList);
+
+                    {#在最底层添加”没有更多了“#}
+                    if (pageNum >= page_total_num) {
+                        $("#myArticlesPart").append('<div class="alert alert-info mt-3" role="alert">'
+                            + '没有更多了!!!'
+                            + '</div>');
+                    } else {
+                        endPageNum = page_total_num;
+                        startPageNum = pageNum;
+                        console.log(startPageNum, endPageNum);
+                    }
+
+
+                }
+            })
+
+        });
+        {#点击更换分类#}
+        $("#wqn_CategoryNav a").click(function () {
+
+            {#console.log(wqn_search_params["category"]);#}
+            if ($(this).attr("id") == wqn_search_params["category"]) {
+                {#console.log('wqn bbbb');#}
+                console.log($(this).attr("id"));
+                return;
+            } else {
+                console.log($(this).attr("id") + 'aaaa');
+                $("#wqn_CategoryNav a").removeClass("active");
+                wqn_search_params["category"] = $(this).attr("id");
+                $(this).addClass("active");
+
+                startPageNum = 1;
+                wqn_search_params["startPageNum"] = startPageNum;
+                endPageNum = 1;
+
+                $.ajax({
+                    url: "/myBlog/searchArticle/",
+                    data: wqn_search_params,
+                    method: 'get',
+                    success: function (data) {
+                        var articleList = data.data.articleList;
+                        var pageNum = parseInt(data.data.startPageNum);
+                        {#console.log(typeof (pageNum));#}
+                        var page_total_num = parseInt(data.data.page_total_num);
+
+                        if (pageNum == 1) {
+                            $("#myArticlesPart div").remove();
+                        }
+                        wqn_Append_Articles(articleList);
+
+                        {#在最底层添加”没有更多了“#}
+                        if (pageNum >= page_total_num) {
+                            $("#myArticlesPart").append('<div class="alert alert-info mt-3" role="alert">'
+                                + '没有更多了!!!'
+                                + '</div>');
+                        } else {
+                            endPageNum = page_total_num;
+                            startPageNum = pageNum;
+                            console.log(startPageNum, endPageNum);
+                        }
+
+
+                    }
+                })
             }
+            {#console.log('bbbb');#}
         })
-    }
+    });
 
-    var startPageNum = 2;
-    var endPageNum = 0;
     //鼠标滚动事件
     $(function () {
         $(window).scroll(function () {
@@ -258,55 +370,50 @@
             console.log("网页的总高度：" + htmlHeight);
 
             console.log("浏览器的高度：" + $(window).height());{% endcomment %}
+            if (startPageNum < endPageNum) {
+                if (($(document).scrollTop() + $(window).height()) > ($(document).height() - 100)) {
 
-            if (($(document).scrollTop() + $(window).height()) > ($(document).height() - 100)) {
-                var wqn_params = {};
-                wqn_params["category"] = $("#wqn_CategoryNav").find(".active").attr('id');
-                wqn_params["searchInfo"] = $("#mySearchInfo").val();
-                wqn_params["startPageNum"] = startPageNum;
-                $.ajax({
-                    url: "/myBlog/searchArticle/",
-                    data: wqn_params,
-                    method: 'get',
-                    success: function (data) {
-                        var articleList = data.data.articleList;
-                        var pageNum = data.data.startPageNum;
-                        var page_total_num = data.data.page_total_num;
+                    startPageNum = startPageNum + 1;
+                    wqn_search_params["startPageNum"] = startPageNum;
+                    $.ajax({
 
-                        
-                        wqn_Append_Articles(articleList);
+                        url: "/myBlog/searchArticle/",
+                        data: wqn_search_params,
+                        method: 'get',
+                        success: function (data) {
+                            var articleList = data.data.articleList;
+                            var pageNum = parseInt(data.data.startPageNum);
+                            {#console.log(typeof (pageNum));#}
+                            var page_total_num = parseInt(data.data.page_total_num);
+
+                            if (pageNum == 1) {
+                                $("#myArticlesPart div").remove();
+                            }
+                            wqn_Append_Articles(articleList);
+
+                            {#在最底层添加”没有更多了“#}
+                            if (pageNum >= page_total_num) {
+                                $("#myArticlesPart").append('<div class="alert alert-info mt-3" role="alert">'
+                                    + '没有更多了!!!'
+                                    + '</div>');
+                            } else {
+                                endPageNum = page_total_num;
+                                startPageNum = pageNum;
+                                console.log(startPageNum, endPageNum);
+                            }
 
 
-                        {#在最底层添加”没有更多了“#}
-                        if (pageNum >= page_total_num) {
-                            $("#myArticlesPart").append('<div class="alert alert-info" role="alert">'
-                                + '没有更多了!!!'
-                                + '</div>');
-                        } else {
-                            endPageNum = page_total_num;
-                            startPageNum = pageNum + 1;
                         }
+                    })
 
 
-                    }
-                })
+                }
             }
 
         })
     });
 
-    {#搜索按钮#}
-    $(function () {
-        $("#mySearchButton").click(function () {
 
-            var searchInfo = $("#mySearchInfo").val();
-
-            console.log(searchInfo);
-            var myRequestData = {"searchInfo": searchInfo};
-
-            searchArticles(myRequestData);
-        })
-    })
 </script>
 </body>
 </html>

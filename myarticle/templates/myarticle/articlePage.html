@@ -111,14 +111,24 @@
                     <div id="MythumbCount">点赞数:{{ userArticle.up_count }}</div>
                 </div>
                 <div class="dropdown-divider"></div>
-                <div class="d-flex justify-content-around">
-                    <nav aria-label="breadcrumb" class="d-flex justify-content-around">
-                        <h4>所属分类:</h4>
-                        <ol class="breadcrumb">
-                            {#                            <li class="breadcrumb-item"><a href="#">所属分类</a></li>#}
-                            <li class="breadcrumb-item active" aria-current="page">{{ userArticle.category.title }}</li>
-                        </ol>
-                    </nav>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <nav aria-label="breadcrumb" class="d-flex justify-content-around">
+                            <h4>所属分类:</h4>
+                            <ol class="breadcrumb">
+                                {#                            <li class="breadcrumb-item"><a href="#">所属分类</a></li>#}
+                                <li class="breadcrumb-item active"
+                                    aria-current="page">{{ userArticle.category.title }}</li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <div>
+
+                        <div class="alert alert-info text-center" role="alert">
+                            文章描述:  {{ userArticle.desc }}
+                        </div>
+                    </div>
                     <div>
                         <h4>
                             标签：
@@ -128,12 +138,11 @@
                         </h4>
                     </div>
                 </div>
-                {#                <div class="dropdown-divider"></div>#}
-                <div class="alert alert-info text-center" role="alert">
-                    {{ userArticle.desc }}
-                </div>
                 <div class="dropdown-divider"></div>
-                <div class="myArticleContent rounded-lg"><p>{{ userArticle.content|safe }}</p></div>
+
+                {#    border border-primary            <div class="dropdown-divider"></div>#}
+                <div class="myArticleContent rounded-lg ">
+                    <p>{{ userArticle.content|safe }}</p></div>
 
                 <div class="dropdown-divider"></div>
 
@@ -184,7 +193,8 @@
         </div>
     </div>
 </div>
-<a class="btn btn-default" href="#myCommentPart" role="button" style="position:fixed;right:0;top:10%">
+<a class="btn btn-default" href="#myCommentPart" role="button"
+   style="position:fixed;right:0;top:10%;background: #6b9fcf">
     去底部
 </a>
 <a class="btn btn-default" href="#" role="button" style="position:fixed;right:0;bottom:0">

@@ -103,7 +103,7 @@ DATABASES = {
         'NAME': 'mybbs_dev',
         'USER': 'root',
         'PASSWORD': 'wqn641214',
-        'HOST': '172.16.207.119',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }

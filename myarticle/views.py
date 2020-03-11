@@ -36,8 +36,18 @@ def searchArticle(request):
     # 对于全局搜索，username=searchInfo,对于博客内搜索，username=username
     username = request.GET.get("username", "")
     print('username in myarticle.views.searchArticle: ', username)
-    # articleList = []
+
+
+    myfilter = Q(title__icontains=searchInfo) | Q(desc__icontains=searchInfo) | Q(user__username__icontains=searchInfo)
+    # 设置搜索文章的分类
+    wqn_category = int(request.GET.get("category", 9999))
+    if wqn_category != 9999:
+        myfilter = Q(
+            Q(title__icontains=searchInfo) | Q(desc__icontains=searchInfo) | Q(user__username__icontains=searchInfo)) & Q(
+            category__nid__exact=wqn_category)
+
     if username != '':
+        # 用于blog内搜索
         articleList = list(models.Article.objects.filter(
             Q(Q(title__icontains=searchInfo) | Q(desc__icontains=searchInfo)) & Q(user__username__exact=username)).
                            extra(
@@ -48,8 +58,8 @@ def searchArticle(request):
                            values("pk", "title", "create_time_new", "desc", "comment_count", "up_count", "user__phone",
                                   "avatarURL", "username"))
     else:
-        articleList = list(models.Article.objects.filter(
-            Q(Q(title__icontains=searchInfo) | Q(desc__icontains=searchInfo)) & Q(user__username__icontains=searchInfo)).
+        # 用于全局搜索
+        articleList = list(models.Article.objects.filter(myfilter).
                            extra(
             select={"create_time_new": "date_format(myarticle_article.create_time,'%%Y-%%m-%%d %%H:%%i:%%s')",
                     "avatarURL": "concat(%s,avatar)",
@@ -63,9 +73,10 @@ def searchArticle(request):
     # 获取所有文章的总页数
     page_total_num = paginator.num_pages
 
-    startPageNum = request.GET.get("startPageNum")
+    # 页面上的search按钮，进行搜索时，需要有个默认值
+    startPageNum = request.GET.get("startPageNum",1)
     # 获取某页（page）的所有文章
-    page_article_list = paginator.page(startPageNum)
+    page_article_list = list(paginator.page(startPageNum))
 
     myResponseData = wrap_json_response(data={"articleList": page_article_list,
                                               "page_total_num": page_total_num,
@@ -99,24 +110,18 @@ def user(request, username):
 
 
 # 进入标签的页面
-def tagToArticle(request, tagID):
+def tagToArticle(request, username, tagID):
     myTag = models.Tag.objects.get(pk=tagID)
+    myUser = MyUserInfo.objects.get(username=username)
     # 获取标签id对应的文档
-    tagArticles = serializers.serialize("json", models.Article.objects.filter(tags=myTag))
+    tagArticles = serializers.serialize("json", models.Article.objects.filter(tags=myTag,user=myUser))
     # 获取标签对应的用户
     # tag2User = tagArticles[0].user
     return JsonResponse(
         data={
             'tagArticles': tagArticles
         }, safe=False)
-    # return render(request, 'myarticle/tagPage.html', context={
-    #     # 'user': user,
-    #     # 'username': username,
-    #     'blogUser': tag2User,
-    #     'userArticles': userArticles,
-    #     'myTag': myTag
-    #     # 'userCatalogs': userCatalogs,
-    # })
+
 
 
 # 进入用户的特定分类页面
@@ -133,14 +138,7 @@ def categoryToArticles(request, username):
         data={
             'categoryToArticles': categoryToArticles
         }, safe=False)
-    # return render(request, 'myarticle/categoryPage.html', context={
-    #     # 'user': user,
-    #     # 'username': username,
-    #     # 'blogUser': user,
-    #     'categoryToArticles': categoryToArticles,
-    #     'mycategory': mycategory
-    #     # 'userCatalogs': userCatalogs,
-    # })
+
 
 
 # 文章详情页面
@@ -281,8 +279,9 @@ def editArticle(request, articleID):
             # print(form_obj.cleaned_data)
             myTags = form_obj.cleaned_data.get("tags")
             form_obj.cleaned_data.pop("tags")
-            newArticle = models.Article.objects.update(**form_obj.cleaned_data, user=request.user)
+            models.Article.objects.filter(pk=articleID).update(**form_obj.cleaned_data, user=request.user)
             models.Article.objects.filter(pk=articleID).first().tags.set(myTags)
+
             myUrl = reverse("myblog:user", kwargs={"username": request.user.username})
             myResponseData = wrap_json_response(code=ReturnCode.SUCCESS, message=myUrl)
             return JsonResponse(data=myResponseData)

@@ -17,8 +17,10 @@ if __name__ == '__main__':
     from guardian.shortcuts import assign_perm
 
     searchInfo ='a'
-    articleList = list(models.Article.objects.filter(
-        Q(Q(title__icontains=searchInfo) | Q(desc__icontains=searchInfo)) & Q(user__username__icontains=searchInfo)).
+    category = 1
+    if category != 9999:
+        myfilter =  Q(Q(title__icontains=searchInfo) | Q(desc__icontains=searchInfo)|Q(user__username__icontains=searchInfo)) & Q(category__nid__exact=category)
+    articleList = list(models.Article.objects.filter(myfilter).
                        extra(
         select={"create_time_new": "date_format(myarticle_article.create_time,'%%Y-%%m-%%d %%H:%%i:%%s')",
                 "avatarURL": "concat(%s,avatar)",
@@ -26,14 +28,14 @@ if __name__ == '__main__':
         select_params=(settings.MEDIA_URL,)).
                        values("pk", "title", "create_time_new", "desc", "comment_count", "up_count", "user__phone",
                               "avatarURL", "username"))
-    print(articleList[0])
-    paginator = Paginator(articleList, 2)
-    # 获取所有文章的总页数
-    page_total_num = paginator.num_pages
-    print(page_total_num)
-    # 获取某页（page）的所有文章
-    page_article_list = paginator.page(1)
-    print(page_article_list[0])
+    # print(articleList[0])
+    # paginator = Paginator(articleList, 2)
+    # # 获取所有文章的总页数
+    # page_total_num = paginator.num_pages
+    # print(page_total_num)
+    # # 获取某页（page）的所有文章
+    # page_article_list = paginator.page(1)
+    # print(page_article_list[0])
 
     # result = Q(title__icontains='aaa') | Q(desc__icontains='bbb')
     # print(type(result))
